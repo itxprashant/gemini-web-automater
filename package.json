@@ -1,0 +1,35 @@
+{
+  "name": "gemini-web-automater",
+  "version": "1.0.0",
+  "description": "A Playwright-powered CLI for automating Gemini Web prompt queues.",
+  "main": "dist/cli.js",
+  "bin": {
+    "gemini-web-automater": "dist/cli.js"
+  },
+  "scripts": {
+    "dev": "tsx src/cli.ts",
+    "start": "tsx src/cli.ts",
+    "login": "tsx src/cli.ts --login",
+    "attach": "tsx src/cli.ts --connect-cdp http://127.0.0.1:9222",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "install:browsers": "playwright install chromium"
+  },
+  "keywords": [
+    "gemini",
+    "playwright",
+    "automation",
+    "cli"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "playwright": "^1.59.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
+  }
+}

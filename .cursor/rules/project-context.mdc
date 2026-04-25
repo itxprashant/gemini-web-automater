@@ -1,0 +1,35 @@
+---
+description: Project context for the Gemini Web Automater CLI
+alwaysApply: true
+---
+
+# Gemini Web Automater Context
+
+This repo is a TypeScript Node CLI that automates Gemini Web with Playwright. The entry point is `src/cli.ts`; browser automation lives in `src/geminiAutomator.ts`; shared shapes live in `src/types.ts`.
+
+## Common Commands
+
+- `npm run build`: typecheck and emit `dist/`.
+- `npm run start -- --input prompts.example.json --out responses`: run the default Playwright flow.
+- `npm run login -- --browser-executable /usr/bin/google-chrome-beta`: open a normal Chrome/Chromium session with the persistent profile and CDP port.
+- `npm run attach -- --input prompts.example.json --out responses`: attach to the already-open browser on `http://127.0.0.1:9222`.
+- `npm run attach -- --chat-url "<gemini-chat-url>" --input prompts.example.json --out responses`: run prompts in a specific existing Gemini chat.
+
+## Automation Model
+
+- Prefer CDP attach mode for Google login reliability. Keep the browser opened by `npm run login` running while using `npm run attach`.
+- `--chat-url` is the preferred flag for targeting a specific Gemini conversation. The automater should open and verify that chat before submitting prompts.
+- Do not navigate between prompts after the target chat is opened; subsequent prompts should continue in the same chat.
+- The code intentionally waits briefly after opening Gemini links so the chat route can settle before prompting.
+
+## Attachments
+
+- Text-like attachments are pasted into Gemini as `text/plain` via the browser clipboard and `Ctrl+V`.
+- Browser clipboard APIs do not support arbitrary file MIME types like `application/pdf`; do not assume direct PDF clipboard paste works.
+- The user may handle PDFs manually. If PDF automation is requested again, prefer explicit upload UI handling or extracted text fallback rather than unsupported `ClipboardItem` MIME types.
+
+## Project Conventions
+
+- Keep dependencies minimal; current CLI parsing is dependency-free.
+- Keep Gemini selectors and browser behavior localized in `src/geminiAutomator.ts`.
+- After code changes, run `npm run build` and check lints for edited files.

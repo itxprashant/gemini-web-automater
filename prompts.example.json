@@ -1,0 +1,20 @@
+{
+  "prompts": [
+    {
+      "id": "explain-playwright",
+      "prompt": "Explain Playwright browser automation in five concise bullet points."
+    },
+    {
+      "id": "follow-up-example",
+      "prompt": "Now give me a tiny TypeScript example that opens a web page and reads its title."
+    },
+    {
+      "id": "follow-up-example-2",
+      "prompt": "ping"
+    },
+    {
+      "id": "follow-up-example-3",
+      "prompt": "pong"
+    }
+  ]
+}
