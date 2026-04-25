@@ -25,11 +25,14 @@ This repo is a TypeScript Node CLI that automates Gemini Web with Playwright. Th
 ## Attachments
 
 - Text-like attachments are pasted into Gemini as `text/plain` via the browser clipboard and `Ctrl+V`.
-- Browser clipboard APIs do not support arbitrary file MIME types like `application/pdf`; do not assume direct PDF clipboard paste works.
-- The user may handle PDFs manually. If PDF automation is requested again, prefer explicit upload UI handling or extracted text fallback rather than unsupported `ClipboardItem` MIME types.
+- Browser clipboard APIs do not support arbitrary file MIME types like `application/pdf`; do not use `ClipboardItem` for PDFs.
+- Non-text attachments such as PDFs use Gemini's upload UI and file chooser.
+- Current Gemini upload selectors: click `button` named `Open upload file menu`, then click `menuitem` matching `/upload files/i`.
+- If Playwright does not receive a file chooser event, the code falls back to `input[type="file"]`.
 
 ## Project Conventions
 
 - Keep dependencies minimal; current CLI parsing is dependency-free.
 - Keep Gemini selectors and browser behavior localized in `src/geminiAutomator.ts`.
+- Preserve the split attachment behavior: text-like files use clipboard paste; non-text files use Gemini upload UI.
 - After code changes, run `npm run build` and check lints for edited files.

@@ -199,14 +199,133 @@ export class GeminiAutomator {
       return;
     }
 
-    console.log(`Pasting ${attachments.length} file${attachments.length === 1 ? '' : 's'} into Gemini...`);
-
     const inputBox = await this.findPromptInput(page, 30_000);
     await inputBox.click();
+
+    if (!attachments.every(isTextLikePath)) {
+      console.log(`Uploading ${attachments.length} file${attachments.length === 1 ? '' : 's'} through Gemini upload menu...`);
+      await this.uploadFilesWithGeminiMenu(page, attachments);
+      await this.waitForAttachmentProcessing(page, attachments.length);
+      return;
+    }
+
+    console.log(`Pasting ${attachments.length} file${attachments.length === 1 ? '' : 's'} into Gemini...`);
     await this.copyFilesToBrowserClipboard(page, attachments);
     const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
     await page.keyboard.press(`${modifier}+V`);
     await this.waitForAttachmentProcessing(page, attachments.length);
+  }
+
+  private async uploadFilesWithGeminiMenu(page: Page, attachments: string[]): Promise<void> {
+    const uploadMenuButton = page.getByRole('button', { name: /open upload file menu|upload file menu/i });
+
+    console.log('Opening Gemini upload file menu...');
+    await uploadMenuButton.click();
+
+    const uploadFilesMenuItem = page.getByRole('menuitem', { name: /upload files/i });
+    await uploadFilesMenuItem.waitFor({ state: 'visible', timeout: 10_000 });
+
+    console.log('Clicking Gemini Upload files menu item...');
+    const fileChooserPromise = page.waitForEvent('filechooser', { timeout: 10_000 }).catch(() => null);
+    await uploadFilesMenuItem.click();
+
+    const fileChooser = await fileChooserPromise;
+    if (fileChooser) {
+      await fileChooser.setFiles(attachments);
+      return;
+    }
+
+    const fileInput = await this.findFileInput(page, 5_000);
+    if (fileInput) {
+      console.log('Using Gemini hidden file input fallback...');
+      await fileInput.setInputFiles(attachments);
+      return;
+    }
+
+    throw new Error('Gemini upload menu opened, but no file chooser or file input became available.');
+  }
+
+  private async dropFilesIntoPrompt(inputBox: Locator, attachments: string[]): Promise<void> {
+    const files = await Promise.all(
+      attachments.map(async (attachment) => ({
+        name: path.basename(attachment),
+        type: mimeTypeForPath(attachment),
+        base64: (await readFile(attachment)).toString('base64'),
+      })),
+    );
+
+    await inputBox.evaluate((target, droppedFiles: ClipboardFilePayload[]) => {
+      target.focus();
+
+      const dataTransfer = new DataTransfer();
+      for (const droppedFile of droppedFiles) {
+        const binary = atob(droppedFile.base64);
+        const bytes = new Uint8Array(binary.length);
+        for (let index = 0; index < binary.length; index += 1) {
+          bytes[index] = binary.charCodeAt(index);
+        }
+
+        dataTransfer.items.add(
+          new File([bytes], droppedFile.name, {
+            type: droppedFile.type,
+          }),
+        );
+      }
+
+      const htmlTarget = target as HTMLElement;
+      const possibleTargets = [
+        htmlTarget,
+        htmlTarget.closest('rich-textarea'),
+        htmlTarget.closest('[role="textbox"]'),
+        htmlTarget.closest('form'),
+        document.querySelector('main'),
+        document.body,
+      ];
+
+      for (const dropTarget of possibleTargets) {
+        if (!dropTarget) {
+          continue;
+        }
+
+        for (const type of ['dragenter', 'dragover', 'drop']) {
+          let event: Event;
+          try {
+            event = new DragEvent(type, {
+              bubbles: true,
+              cancelable: true,
+              dataTransfer,
+            });
+          } catch {
+            event = new Event(type, {
+              bubbles: true,
+              cancelable: true,
+            });
+          }
+
+          Object.defineProperty(event, 'dataTransfer', {
+            configurable: true,
+            value: dataTransfer,
+          });
+
+          dropTarget.dispatchEvent(event);
+        }
+      }
+    }, files);
+  }
+
+  private async findFileInput(page: Page, timeoutMs: number): Promise<Locator | null> {
+    const deadline = Date.now() + timeoutMs;
+
+    while (Date.now() < deadline) {
+      const input = page.locator('input[type="file"]').last();
+      if ((await input.count().catch(() => 0)) > 0) {
+        return input;
+      }
+
+      await delay(250);
+    }
+
+    return null;
   }
 
   private async copyFilesToBrowserClipboard(page: Page, attachments: string[]): Promise<void> {

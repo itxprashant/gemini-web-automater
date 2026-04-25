@@ -1,6 +1,11 @@
 {
   "prompts": [
     {
+      "id": "assign-pdf-test",
+      "prompt": "Summarize this assignment PDF.",
+      "files": ["./Assign.pdf"]
+    },
+    {
       "id": "explain-playwright",
       "prompt": "Explain Playwright browser automation in five concise bullet points."
     },

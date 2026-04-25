@@ -43,7 +43,7 @@ Create a JSON file with either an object containing `prompts`:
 }
 ```
 
-Use `files` or `attachments` for per-prompt uploads. Relative paths resolve from the prompt queue file location. Files are pasted into the Gemini prompt box, similar to copying a file and pressing `Ctrl+V`.
+Use `files` or `attachments` for per-prompt uploads. Relative paths resolve from the prompt queue file location. Text-like files are pasted into the Gemini prompt box, similar to copying a file and pressing `Ctrl+V`; non-text files such as PDFs use Gemini's upload menu and file chooser.
 
 Or a plain array:
 
@@ -154,10 +154,19 @@ responses/2026-04-24T21-00-00-000Z-first-prompt.md
 
 The file includes the prompt id, completion timestamp, original prompt, attachment paths, and Gemini response.
 
+## Attachment Behavior
+
+The automater uses two attachment paths:
+
+- Text-like files (`.md`, `.txt`, `.json`, `.csv`, source code, YAML, logs) are copied into the browser clipboard as plain text and pasted into Gemini.
+- Non-text files (`.pdf`, images, and unknown binary files) use Gemini's upload UI. The current selectors are `button` named `Open upload file menu`, followed by the `menuitem` named `Upload files`.
+
+If the native file chooser event is not exposed, the tool falls back to the hidden `input[type="file"]` element.
+
 ## Notes
 
 - The tool will not bypass Google login, captchas, account checks, rate limits, or Gemini restrictions.
-- Attachments are pasted into the prompt box and depend on the selected Gemini model/account supporting pasted file uploads.
+- Attachments depend on the selected Gemini model/account supporting pasted text or file uploads.
 - Google may invalidate or reject sessions in newly launched automated browsers. If that happens, use `npm run login` and `npm run attach` so the tool controls the same normal browser window.
 - Gemini Web UI selectors can change. If the tool stops finding the prompt box, send button, or response text, update the selector lists in `src/geminiAutomator.ts`.
 - Use a dedicated automation profile. Do not point `--profile` at your normal Chrome user profile.
