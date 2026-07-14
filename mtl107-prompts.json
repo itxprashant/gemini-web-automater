@@ -1,0 +1,40 @@
+{
+    "prompts": [
+        {
+            "id": "prompt-1",
+            "prompt": "Problem 1"
+        },
+        {
+            "id": "prompt-2",
+            "prompt": "Problem 2"
+        },
+        {
+            "id": "prompt-3",
+            "prompt": "Problem 3"
+        },
+        {
+            "id": "prompt-4",
+            "prompt": "Problem 4"
+        },
+        {
+            "id": "prompt-5",
+            "prompt": "Problem 5"
+        },
+        {
+            "id": "prompt-6",
+            "prompt": "Problem 6"
+        },
+        {
+            "id": "prompt-7",
+            "prompt": "Problem 7"
+        },
+        {
+            "id": "prompt-8",
+            "prompt": "Problem 8"
+        },
+        {
+            "id": "prompt-9",
+            "prompt": "Problem 9"
+        }
+    ]
+}

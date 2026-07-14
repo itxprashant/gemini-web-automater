@@ -1,0 +1,675 @@
+\documentclass[11pt, a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb, amsfonts, amsthm} % standard math packages
+\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry} % margins
+\usepackage{enumitem} % for customizing lists (a), (b), etc.
+\usepackage{fancyhdr} % for headers and footers
+\usepackage{mathtools} % for better formatting of norms/abs values
+\usepackage{tcolorbox} % styled problem boxes
+
+% --- Header/Footer Setup ---
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textbf{MTL 107}}
+\chead{Semester-II, 2025-2026}
+\rhead{Tutorial Sheet 5}
+\cfoot{\thepage}
+
+% --- Custom Macros ---
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\K}{\mathbb{K}} % For Field K
+\newcommand{\eps}{\varepsilon}
+
+% definition for Norm ||.|| and Absolute value |.|
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+
+% --- Environment Setup ---
+\newenvironment{problem}{%
+  \begin{tcolorbox}[
+    colback=blue!4!white,
+    colframe=blue!38!black,
+    boxrule=0.95pt,
+    arc=3pt,
+    left=11pt,
+    right=11pt,
+    top=10pt,
+    bottom=11pt,
+    before skip=12pt,
+    after skip=14pt,
+  ]
+  \noindent\textbf{\textcolor{blue!35!black}{Problem}}\par\nointerlineskip
+  {\color{blue!42!black}\rule{\linewidth}{0.55pt}}\par\vspace{0.55em}%
+}{%
+  \end{tcolorbox}%
+}
+\newif\ifsolutionnewpage
+\solutionnewpagetrue
+\newenvironment{solution}
+  {\begin{proof}[Solution]}
+  {\end{proof}\ifsolutionnewpage\newpage\fi}
+
+\title{\textbf{Tutorial Sheet 5 Solutions}}
+\author{Prashant Tiwari}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+
+\begin{problem}
+    Apply Gaussian elimination to the system
+    \begin{align*}
+        E_{1}: \quad &30.00x_{1} + 591400x_{2} = 591700, \\
+        E_{2}: \quad &5.291x_{1} - 6.130x_{2} = 46.78,
+    \end{align*}
+    using partial pivoting and four-digit arithmetic with rounding, and compare the results to the exact solution $x_{1}=10.00$ and $x_{2}=1.000$.
+\end{problem}
+
+\begin{solution}
+    We apply Gaussian elimination with partial pivoting using four-digit rounding arithmetic. 
+    
+    First, we determine the pivot element for the first column. We compare the absolute values of the coefficients of $x_1$:
+    \[
+    \max(\abs{30.00}, \abs{5.291}) = 30.00
+    \]
+    Since the largest absolute value is already in the first row ($E_1$), no row interchange is necessary. The pivot is $30.00$.
+
+    Next, we compute the multiplier $m_{21}$ to eliminate $x_1$ from $E_2$:
+    \[
+    m_{21} = \frac{5.291}{30.00} = 0.176366\dots \xrightarrow{\text{round}} 0.1764
+    \]
+
+    We perform the row operation $E_2 \leftarrow E_2 - m_{21}E_1$:
+    
+    \textbf{Updating the coefficient of $x_2$ in $E_2$:}
+    \begin{align*}
+        a_{22}^{(2)} &= -6.130 - (0.1764)(591400) \\
+        &= -6.130 - 104322.96 \\
+        &\xrightarrow{\text{round}} -6.130 - 1.043 \times 10^5 \\
+        &= -104306.13 \xrightarrow{\text{round}} -1.043 \times 10^5 = -104300
+    \end{align*}
+
+    \textbf{Updating the right-hand side of $E_2$:}
+    \begin{align*}
+        b_{2}^{(2)} &= 46.78 - (0.1764)(591700) \\
+        &= 46.78 - 104375.88 \\
+        &\xrightarrow{\text{round}} 46.78 - 1.044 \times 10^5 \\
+        &= -104353.22 \xrightarrow{\text{round}} -1.044 \times 10^5 = -104400
+    \end{align*}
+
+    The new triangular system is:
+    \begin{align*}
+        30.00x_{1} + 591400x_{2} &= 591700 \\
+        -104300x_{2} &= -104400
+    \end{align*}
+
+    Now, we perform backward substitution. 
+    
+    \textbf{Solving for $x_2$:}
+    \[
+    x_2 = \frac{-104400}{-104300} = 1.000958\dots \xrightarrow{\text{round}} 1.001
+    \]
+
+    \textbf{Solving for $x_1$:}
+    \begin{align*}
+        30.00x_1 &= 591700 - (591400)(1.001) \\
+        (591400)(1.001) &= 591991.4 \xrightarrow{\text{round}} 5.920 \times 10^5 = 592000 \\
+        30.00x_1 &= 591700 - 592000 = -300.0 \\
+        x_1 &= \frac{-300.0}{30.00} = -10.00
+    \end{align*}
+
+    \textbf{Comparison with the exact solution:}
+    The computed approximate solution is $x_1 \approx -10.00$ and $x_2 \approx 1.001$. 
+    
+    Comparing this to the exact solution ($x_1 = 10.00, x_2 = 1.000$), we see that while the approximation for $x_2$ is reasonably close, the computed value for $x_1$ is completely wrong (off by a sign and magnitude). This illustrates that standard partial pivoting can still fail dramatically if the system is ill-scaled (equations have coefficients of vastly different magnitudes), allowing round-off errors to dominate the computation.
+\end{solution}
+
+\begin{problem}
+    Determine the total number of division, multiplication, subtraction, and comparison operations required when solving a system of $n$ linear equations using Gaussian elimination and Gaussian elimination with partial pivoting.
+\end{problem}
+
+\begin{solution}
+    Let the system of $n$ linear equations be represented by $Ax = b$. We will count the operations required for both the forward elimination phase and the backward substitution phase.
+
+    \subsubsection*{1. Gaussian Elimination (Without Pivoting)}
+    \textbf{Phase 1: Forward Elimination} \\
+    For each step $k$ from 1 to $n-1$:
+    \begin{itemize}
+        \item \textbf{Divisions:} We compute the multipliers $m_{ik} = \frac{a_{ik}}{a_{kk}}$ for $i = k+1, \dots, n$. This requires $n-k$ divisions. \\
+        Total divisions = $\sum_{k=1}^{n-1} (n-k) = \frac{n(n-1)}{2}$.
+        
+        \item \textbf{Multiplications:} We update the matrix elements $a_{ij}^{(k+1)} = a_{ij}^{(k)} - m_{ik}a_{kj}^{(k)}$ for $j = k+1, \dots, n$ and the right-hand side $b_i^{(k+1)} = b_i^{(k)} - m_{ik}b_k^{(k)}$. This requires $n-k$ multiplications for the matrix elements and $1$ multiplication for the RHS, totaling $n-k+1$ multiplications per row. Since there are $n-k$ rows to update, the multiplications per step $k$ are $(n-k)(n-k+1)$. \\
+        Total multiplications = $\sum_{k=1}^{n-1} (n-k)(n-k+1) = \sum_{j=1}^{n-1} j(j+1) = \frac{n(n-1)(n+1)}{3} = \frac{n^3-n}{3}$.
+        
+        \item \textbf{Subtractions:} Each multiplication is paired with exactly one subtraction. \\
+        Total subtractions = $\frac{n^3-n}{3}$.
+    \end{itemize}
+
+    \textbf{Phase 2: Backward Substitution} \\
+    We compute $x_n = \frac{b_n}{a_{nn}}$ and $x_i = \frac{b_i - \sum_{j=i+1}^n a_{ij}x_j}{a_{ii}}$ for $i = n-1, \dots, 1$.
+    \begin{itemize}
+        \item \textbf{Divisions:} 1 division for each $x_i$. \\
+        Total divisions = $n$.
+        \item \textbf{Multiplications:} For a given $i$, computing the sum $\sum_{j=i+1}^n a_{ij}x_j$ requires $n-i$ multiplications. \\
+        Total multiplications = $\sum_{i=1}^{n-1} (n-i) = \frac{n(n-1)}{2}$.
+        \item \textbf{Subtractions:} For a given $i$, there are $n-i-1$ subtractions in the sum, plus $1$ subtraction from $b_i$, totaling $n-i$ subtractions. \\
+        Total subtractions = $\sum_{i=1}^{n-1} (n-i) = \frac{n(n-1)}{2}$.
+    \end{itemize}
+
+    \textbf{Total Operations for Gaussian Elimination:}
+    \begin{itemize}
+        \item \textbf{Divisions:} $\frac{n(n-1)}{2} + n = \frac{n(n+1)}{2}$
+        \item \textbf{Multiplications:} $\frac{n^3-n}{3} + \frac{n^2-n}{2} = \frac{2n^3 + 3n^2 - 5n}{6}$
+        \item \textbf{Subtractions:} $\frac{n^3-n}{3} + \frac{n^2-n}{2} = \frac{2n^3 + 3n^2 - 5n}{6}$
+        \item \textbf{Comparisons:} $0$
+    \end{itemize}
+
+    \subsubsection*{2. Gaussian Elimination with Partial Pivoting}
+    When using partial pivoting, the arithmetic operations (divisions, multiplications, subtractions) remain exactly the same. The only difference is the addition of comparisons used to find the pivot element.
+
+    \textbf{Phase 1: Forward Elimination with Pivoting} \\
+    For each step $k$ from 1 to $n-1$:
+    \begin{itemize}
+        \item \textbf{Comparisons:} We must find the maximum of $\abs{a_{ik}}$ for $i = k, \dots, n$. Finding the maximum among $n-k+1$ elements requires $(n-k)$ comparisons. \\
+        Total comparisons = $\sum_{k=1}^{n-1} (n-k) = \frac{n(n-1)}{2}$.
+    \end{itemize}
+
+    \textbf{Total Operations for Gaussian Elimination with Partial Pivoting:}
+    \begin{itemize}
+        \item \textbf{Divisions:} $\frac{n(n+1)}{2}$
+        \item \textbf{Multiplications:} $\frac{2n^3 + 3n^2 - 5n}{6}$
+        \item \textbf{Subtractions:} $\frac{2n^3 + 3n^2 - 5n}{6}$
+        \item \textbf{Comparisons:} $\frac{n(n-1)}{2}$
+    \end{itemize}
+\end{solution}
+
+\begin{problem}
+    Prove that if a matrix $A$ is strictly diagonally dominant, then $A$ is non-singular. Moreover, show that Gaussian elimination can be performed on any linear system of the form $Ax=b$ without the need for row interchanges.
+\end{problem}
+
+\begin{solution}
+    \textbf{Part 1: A strictly diagonally dominant matrix is non-singular.}
+    
+    Let $A \in \R^{n \times n}$ (or $\C^{n \times n}$) be a strictly diagonally dominant matrix. By definition, this means that for each row $i \in \{1, 2, \dots, n\}$, we have:
+    \begin{equation}
+        \abs{a_{ii}} > \sum_{\substack{j=1 \\ j \neq i}}^n \abs{a_{ij}} \label{eq:sdd}
+    \end{equation}
+    
+    We will prove that $A$ is non-singular by contradiction. Assume that $A$ is singular. Then there exists a non-zero vector $x = [x_1, x_2, \dots, x_n]^T \neq 0$ such that $Ax = 0$.
+    
+    Since $x \neq 0$, there exists an index $k$ such that $\abs{x_k} = \max_{1 \le i \le n} \abs{x_i}$, and necessarily $\abs{x_k} > 0$. 
+    
+    Consider the $k$-th equation of the system $Ax = 0$:
+    \[
+    \sum_{j=1}^n a_{kj} x_j = 0 \implies a_{kk} x_k = -\sum_{\substack{j=1 \\ j \neq k}}^n a_{kj} x_j
+    \]
+    
+    Taking the absolute value of both sides and applying the triangle inequality, we get:
+    \[
+    \abs{a_{kk}} \abs{x_k} = \abs*{\sum_{\substack{j=1 \\ j \neq k}}^n a_{kj} x_j} \le \sum_{\substack{j=1 \\ j \neq k}}^n \abs{a_{kj}} \abs{x_j}
+    \]
+    
+    Since $\abs{x_k} > 0$, we can divide both sides by $\abs{x_k}$:
+    \[
+    \abs{a_{kk}} \le \sum_{\substack{j=1 \\ j \neq k}}^n \abs{a_{kj}} \frac{\abs{x_j}}{\abs{x_k}}
+    \]
+    
+    By our choice of $k$, we know that $\abs{x_j} \le \abs{x_k}$ for all $j$, which implies $\frac{\abs{x_j}}{\abs{x_k}} \le 1$. Therefore:
+    \[
+    \abs{a_{kk}} \le \sum_{\substack{j=1 \\ j \neq k}}^n \abs{a_{kj}}
+    \]
+    
+    This directly contradicts the strict diagonal dominance condition given in equation \eqref{eq:sdd}. Thus, our assumption that $A$ is singular must be false. Therefore, $A$ is non-singular.
+
+    \vspace{1em}
+    \textbf{Part 2: Gaussian elimination without row interchanges.}
+    
+    To show that Gaussian elimination can be performed without row interchanges, we need to prove that after each step of elimination, the remaining submatrix is also strictly diagonally dominant. If this holds, every pivot element will be non-zero (since strictly diagonally dominant matrices have non-zero diagonal entries), and no row swaps will be required.
+
+    Consider the first step of Gaussian elimination. Since $A$ is strictly diagonally dominant, $\abs{a_{11}} > \sum_{j=2}^n \abs{a_{1j}} \ge 0$, so the pivot $a_{11} \neq 0$. 
+    
+    The elimination step updates the elements of the remaining $(n-1) \times (n-1)$ submatrix $A^{(2)}$ as follows:
+    \[
+    a_{ij}^{(2)} = a_{ij} - \frac{a_{i1}}{a_{11}} a_{1j}, \quad \text{for } i, j = 2, \dots, n.
+    \]
+    
+    We want to show that $A^{(2)}$ is strictly diagonally dominant, meaning for each $i = 2, \dots, n$:
+    \[
+    \abs*{a_{ii}^{(2)}} > \sum_{\substack{j=2 \\ j \neq i}}^n \abs*{a_{ij}^{(2)}}
+    \]
+    
+    Using the triangle inequality, we evaluate the sum of the off-diagonal elements in row $i$ of $A^{(2)}$:
+    \begin{align*}
+        \sum_{\substack{j=2 \\ j \neq i}}^n \abs*{a_{ij}^{(2)}} &= \sum_{\substack{j=2 \\ j \neq i}}^n \abs*{a_{ij} - \frac{a_{i1}}{a_{11}} a_{1j}} \\
+        &\le \sum_{\substack{j=2 \\ j \neq i}}^n \left( \abs{a_{ij}} + \frac{\abs{a_{i1}}}{\abs{a_{11}}} \abs{a_{1j}} \right) \\
+        &= \sum_{\substack{j=2 \\ j \neq i}}^n \abs{a_{ij}} + \frac{\abs{a_{i1}}}{\abs{a_{11}}} \sum_{\substack{j=2 \\ j \neq i}}^n \abs{a_{1j}}
+    \end{align*}
+    
+    From the strict diagonal dominance of the first row of $A$, we know:
+    \[
+    \abs{a_{11}} > \sum_{j=2}^n \abs{a_{1j}} = \abs{a_{1i}} + \sum_{\substack{j=2 \\ j \neq i}}^n \abs{a_{1j}} \implies \sum_{\substack{j=2 \\ j \neq i}}^n \abs{a_{1j}} < \abs{a_{11}} - \abs{a_{1i}}
+    \]
+    
+    Substituting this strict inequality back into our bound:
+    \begin{align*}
+        \sum_{\substack{j=2 \\ j \neq i}}^n \abs*{a_{ij}^{(2)}} &< \sum_{\substack{j=2 \\ j \neq i}}^n \abs{a_{ij}} + \frac{\abs{a_{i1}}}{\abs{a_{11}}} \left( \abs{a_{11}} - \abs{a_{1i}} \right) \\
+        &= \sum_{\substack{j=2 \\ j \neq i}}^n \abs{a_{ij}} + \abs{a_{i1}} - \frac{\abs{a_{i1}}}{\abs{a_{11}}} \abs{a_{1i}}
+    \end{align*}
+    
+    Notice that $\sum_{\substack{j=2 \\ j \neq i}}^n \abs{a_{ij}} + \abs{a_{i1}} = \sum_{\substack{j=1 \\ j \neq i}}^n \abs{a_{ij}}$. Because the original matrix $A$ is strictly diagonally dominant, we have $\sum_{\substack{j=1 \\ j \neq i}}^n \abs{a_{ij}} < \abs{a_{ii}}$. Therefore:
+    \begin{align*}
+        \sum_{\substack{j=2 \\ j \neq i}}^n \abs*{a_{ij}^{(2)}} &< \abs{a_{ii}} - \frac{\abs{a_{i1}}}{\abs{a_{11}}} \abs{a_{1i}}
+    \end{align*}
+    
+    Finally, by the reverse triangle inequality ($\abs{x} - \abs{y} \le \abs{x - y}$), we get:
+    \[
+    \abs{a_{ii}} - \abs*{\frac{a_{i1}}{a_{11}} a_{1i}} \le \abs*{a_{ii} - \frac{a_{i1}}{a_{11}} a_{1i}} = \abs*{a_{ii}^{(2)}}
+    \]
+    
+    Combining these inequalities yields:
+    \[
+    \sum_{\substack{j=2 \\ j \neq i}}^n \abs*{a_{ij}^{(2)}} < \abs*{a_{ii}^{(2)}}
+    \]
+    
+    Thus, $A^{(2)}$ is strictly diagonally dominant. By induction, every submatrix $A^{(k)}$ generated during Gaussian elimination is strictly diagonally dominant. Since strictly diagonally dominant matrices have non-zero diagonals, every pivot $a_{kk}^{(k)}$ will be non-zero, allowing Gaussian elimination to proceed to completion without any row interchanges.
+\end{solution}
+
+\begin{problem}
+    Determine a factorization in the form $A=(P^{T}L)U$ for the matrix
+    \[
+    A=\begin{bmatrix}0&0&-1&1\\ 1&1&-1&2\\ -1&-1&2&0\\ 1&2&0&2\end{bmatrix}
+    \]
+    where $P$ denotes a permutation matrix.
+\end{problem}
+
+\begin{solution}
+    We will perform Gaussian elimination with partial pivoting on $A$ to find the decomposition $PA = LU$. Once we have $P$, $L$, and $U$, we can multiply both sides by $P^{-1} = P^T$ to obtain $A = P^T LU = (P^T L)U$.
+
+    Let the initial matrices be $U^{(1)} = A$, $L = I_4$, and $P = I_4$.
+
+    \textbf{Step 1:}
+    In the first column of $U^{(1)}$, the elements are $0, 1, -1, 1$. The maximum absolute value is $1$. We can choose to swap Row 1 with Row 2 (the first instance of the maximum). 
+    
+    Swap Row 1 and Row 2 of $U^{(1)}$ and $P$:
+    \[
+    U^{(1')} = \begin{bmatrix} 1&1&-1&2 \\ 0&0&-1&1 \\ -1&-1&2&0 \\ 1&2&0&2 \end{bmatrix}, \quad
+    P_1 = \begin{bmatrix} 0&1&0&0 \\ 1&0&0&0 \\ 0&0&1&0 \\ 0&0&0&1 \end{bmatrix}
+    \]
+    Now, perform row operations to eliminate entries below the pivot $u_{11} = 1$:
+    \begin{align*}
+        m_{21} &= 0/1 = 0 \implies R_2 \leftarrow R_2 - 0 R_1 \\
+        m_{31} &= -1/1 = -1 \implies R_3 \leftarrow R_3 - (-1) R_1 \\
+        m_{41} &= 1/1 = 1 \implies R_4 \leftarrow R_4 - 1 R_1 
+    \end{align*}
+    Applying these gives:
+    \[
+    U^{(2)} = \begin{bmatrix} 1&1&-1&2 \\ 0&0&-1&1 \\ 0&0&1&2 \\ 0&1&1&0 \end{bmatrix}
+    \]
+
+    \textbf{Step 2:}
+    In the second column, below the first row, the elements are $0, 0, 1$. The maximum absolute value is $1$, which is in Row 4. We swap Row 2 and Row 4.
+    
+    Swap Row 2 and Row 4 of $U^{(2)}$ and $P_1$. Also, swap the corresponding multipliers in $L$: $m_{21}$ and $m_{41}$ swap places. Thus, the new multipliers are $m_{21} = 1$ and $m_{41} = 0$.
+    \[
+    U^{(2')} = \begin{bmatrix} 1&1&-1&2 \\ 0&1&1&0 \\ 0&0&1&2 \\ 0&0&-1&1 \end{bmatrix}, \quad
+    P_2 = \begin{bmatrix} 0&1&0&0 \\ 0&0&0&1 \\ 0&0&1&0 \\ 1&0&0&0 \end{bmatrix}
+    \]
+    The pivot is $u_{22} = 1$. Perform row operations for column 2:
+    \begin{align*}
+        m_{32} &= 0/1 = 0 \implies R_3 \leftarrow R_3 - 0 R_2 \\
+        m_{42} &= 0/1 = 0 \implies R_4 \leftarrow R_4 - 0 R_2 
+    \end{align*}
+    Since the multipliers are $0$, the matrix remains unchanged: $U^{(3)} = U^{(2')}$.
+
+    \textbf{Step 3:}
+    In the third column, below the second row, the elements are $1, -1$. The maximum absolute value is $1$. The pivot is already at the correct position (Row 3), so no row swap is necessary.
+    
+    The pivot is $u_{33} = 1$. Perform the row operation for column 3:
+    \[
+    m_{43} = -1/1 = -1 \implies R_4 \leftarrow R_4 - (-1) R_3 \implies R_4 \leftarrow R_4 + R_3
+    \]
+    Applying this gives our final upper triangular matrix $U$:
+    \[
+    U = \begin{bmatrix} 1&1&-1&2 \\ 0&1&1&0 \\ 0&0&1&2 \\ 0&0&0&3 \end{bmatrix}
+    \]
+
+    \textbf{Assembling the Matrices:}
+    We construct $L$ using $1$s on the diagonal and the recorded multipliers $m_{ij}$ in their respective lower triangular positions:
+    \[
+    L = \begin{bmatrix} 1&0&0&0 \\ 1&1&0&0 \\ -1&0&1&0 \\ 0&0&-1&1 \end{bmatrix}
+    \]
+    The permutation matrix $P$ (from applying swap(1,2) then swap(2,4) to $I_4$) and its transpose $P^T = P^{-1}$ are:
+    \[
+    P = \begin{bmatrix} 0&1&0&0 \\ 0&0&0&1 \\ 0&0&1&0 \\ 1&0&0&0 \end{bmatrix}, \quad 
+    P^T = \begin{bmatrix} 0&0&0&1 \\ 1&0&0&0 \\ 0&0&1&0 \\ 0&1&0&0 \end{bmatrix}
+    \]
+    Now we compute the factor $P^T L$:
+    \[
+    P^T L = \begin{bmatrix} 0&0&0&1 \\ 1&0&0&0 \\ 0&0&1&0 \\ 0&1&0&0 \end{bmatrix} 
+    \begin{bmatrix} 1&0&0&0 \\ 1&1&0&0 \\ -1&0&1&0 \\ 0&0&-1&1 \end{bmatrix} = 
+    \begin{bmatrix} 0&0&-1&1 \\ 1&0&0&0 \\ -1&0&1&0 \\ 1&1&0&0 \end{bmatrix}
+    \]
+    
+    \textbf{Final Factorization:}
+    The factorization $A = (P^T L)U$ is given by:
+    \[
+    A = \underbrace{\begin{bmatrix} 0&0&-1&1 \\ 1&0&0&0 \\ -1&0&1&0 \\ 1&1&0&0 \end{bmatrix}}_{P^T L} 
+    \underbrace{\begin{bmatrix} 1&1&-1&2 \\ 0&1&1&0 \\ 0&0&1&2 \\ 0&0&0&3 \end{bmatrix}}_{U}
+    \]
+\end{solution}
+
+\begin{problem}
+    Find the first two iterations of the Gauss-Jacobi method for the following linear system, using $x^{(0)}=0$:
+    \begin{align*}
+        3x_{1}-x_{2}+x_{3} &= 1, \\
+        3x_{1}+6x_{2}+2x_{3} &= 0, \\
+        3x_{1}+3x_{2}+7x_{3} &= 4.
+    \end{align*}
+\end{problem}
+
+\begin{solution}
+    The given system of linear equations is:
+    \begin{align*}
+        3x_{1} - x_{2} + x_{3} &= 1 \\
+        3x_{1} + 6x_{2} + 2x_{3} &= 0 \\
+        3x_{1} + 3x_{2} + 7x_{3} &= 4
+    \end{align*}
+
+    To apply the Gauss-Jacobi method, we rewrite the equations to isolate the variables on the main diagonal:
+    \begin{align*}
+        x_{1} &= \frac{1}{3} \left( 1 + x_{2} - x_{3} \right) \\
+        x_{2} &= \frac{1}{6} \left( 0 - 3x_{1} - 2x_{3} \right) \\
+        x_{3} &= \frac{1}{7} \left( 4 - 3x_{1} - 3x_{2} \right)
+    \end{align*}
+
+    The Gauss-Jacobi iterative method is defined by using the values from the $k$-th iteration to compute the $(k+1)$-th iteration:
+    \begin{align*}
+        x_{1}^{(k+1)} &= \frac{1}{3} \left( 1 + x_{2}^{(k)} - x_{3}^{(k)} \right) \\
+        x_{2}^{(k+1)} &= \frac{1}{6} \left( -3x_{1}^{(k)} - 2x_{3}^{(k)} \right) \\
+        x_{3}^{(k+1)} &= \frac{1}{7} \left( 4 - 3x_{1}^{(k)} - 3x_{2}^{(k)} \right)
+    \end{align*}
+
+    The initial guess is $x^{(0)} = \begin{bmatrix} 0 & 0 & 0 \end{bmatrix}^T$.
+
+    \textbf{First Iteration ($k=0$):} \\
+    Substitute $x_1^{(0)} = 0, x_2^{(0)} = 0, x_3^{(0)} = 0$ into the iterative equations:
+    \begin{align*}
+        x_{1}^{(1)} &= \frac{1}{3} \left( 1 + 0 - 0 \right) = \frac{1}{3} \\[1ex]
+        x_{2}^{(1)} &= \frac{1}{6} \left( -3(0) - 2(0) \right) = 0 \\[1ex]
+        x_{3}^{(1)} &= \frac{1}{7} \left( 4 - 3(0) - 3(0) \right) = \frac{4}{7}
+    \end{align*}
+    Thus, $x^{(1)} = \begin{bmatrix} 1/3 \\ 0 \\ 4/7 \end{bmatrix}$.
+
+    \textbf{Second Iteration ($k=1$):} \\
+    Substitute $x_1^{(1)} = \frac{1}{3}, x_2^{(1)} = 0, x_3^{(1)} = \frac{4}{7}$ into the iterative equations:
+    \begin{align*}
+        x_{1}^{(2)} &= \frac{1}{3} \left( 1 + 0 - \frac{4}{7} \right) = \frac{1}{3} \left( \frac{3}{7} \right) = \frac{1}{7} \\[1ex]
+        x_{2}^{(2)} &= \frac{1}{6} \left( -3\left(\frac{1}{3}\right) - 2\left(\frac{4}{7}\right) \right) = \frac{1}{6} \left( -1 - \frac{8}{7} \right) = \frac{1}{6} \left( -\frac{15}{7} \right) = -\frac{15}{42} = -\frac{5}{14} \\[1ex]
+        x_{3}^{(2)} &= \frac{1}{7} \left( 4 - 3\left(\frac{1}{3}\right) - 3(0) \right) = \frac{1}{7} \left( 4 - 1 \right) = \frac{3}{7}
+    \end{align*}
+    Thus, $x^{(2)} = \begin{bmatrix} 1/7 \\ -5/14 \\ 3/7 \end{bmatrix}$.
+
+    \textbf{Summary of Results:}
+    The first two iterations yield:
+    \[
+    x^{(1)} = \begin{bmatrix} 1/3 \\ 0 \\ 4/7 \end{bmatrix}, \quad x^{(2)} = \begin{bmatrix} 1/7 \\ -5/14 \\ 3/7 \end{bmatrix}
+    \]
+\end{solution}
+
+
+\begin{problem}
+    Find the first two iterations of the Gauss-Seidel method for the following linear system, using $x^{(0)}=0$:
+    \begin{align*}
+        10x_{1}-x_{2} &= 9, \\
+        -x_{1}+10x_{2}-2x_{3} &= 7, \\
+        -2x_{2}+10x_{3} &= 6.
+    \end{align*}
+\end{problem}
+
+\begin{solution}
+    The given system of linear equations is:
+    \begin{align*}
+        10x_{1} - x_{2} &= 9 \\
+        -x_{1} + 10x_{2} - 2x_{3} &= 7 \\
+        -2x_{2} + 10x_{3} &= 6
+    \end{align*}
+
+    To apply the Gauss-Seidel method, we first rewrite the equations to isolate the variables on the main diagonal:
+    \begin{align*}
+        x_{1} &= \frac{1}{10} \left( 9 + x_{2} \right) \\
+        x_{2} &= \frac{1}{10} \left( 7 + x_{1} + 2x_{3} \right) \\
+        x_{3} &= \frac{1}{10} \left( 6 + 2x_{2} \right)
+    \end{align*}
+
+    The Gauss-Seidel iterative method is defined by using the most recently computed values as soon as they are available. Thus, the iterative equations are:
+    \begin{align*}
+        x_{1}^{(k+1)} &= \frac{1}{10} \left( 9 + x_{2}^{(k)} \right) \\
+        x_{2}^{(k+1)} &= \frac{1}{10} \left( 7 + x_{1}^{(k+1)} + 2x_{3}^{(k)} \right) \\
+        x_{3}^{(k+1)} &= \frac{1}{10} \left( 6 + 2x_{2}^{(k+1)} \right)
+    \end{align*}
+
+    The initial guess is $x^{(0)} = \begin{bmatrix} 0 & 0 & 0 \end{bmatrix}^T$.
+
+    \textbf{First Iteration ($k=0$):} \\
+    Substitute the known values sequentially:
+    \begin{align*}
+        x_{1}^{(1)} &= \frac{1}{10} \left( 9 + 0 \right) = 0.9 \\[1ex]
+        x_{2}^{(1)} &= \frac{1}{10} \left( 7 + 0.9 + 2(0) \right) = \frac{7.9}{10} = 0.79 \\[1ex]
+        x_{3}^{(1)} &= \frac{1}{10} \left( 6 + 2(0.79) \right) = \frac{6 + 1.58}{10} = \frac{7.58}{10} = 0.758
+    \end{align*}
+    Thus, $x^{(1)} = \begin{bmatrix} 0.9 \\ 0.79 \\ 0.758 \end{bmatrix}$.
+
+    \textbf{Second Iteration ($k=1$):} \\
+    Substitute the values from the first iteration:
+    \begin{align*}
+        x_{1}^{(2)} &= \frac{1}{10} \left( 9 + 0.79 \right) = \frac{9.79}{10} = 0.979 \\[1ex]
+        x_{2}^{(2)} &= \frac{1}{10} \left( 7 + 0.979 + 2(0.758) \right) = \frac{1}{10} \left( 7.979 + 1.516 \right) = \frac{9.495}{10} = 0.9495 \\[1ex]
+        x_{3}^{(2)} &= \frac{1}{10} \left( 6 + 2(0.9495) \right) = \frac{1}{10} \left( 6 + 1.899 \right) = \frac{7.899}{10} = 0.7899
+    \end{align*}
+    Thus, $x^{(2)} = \begin{bmatrix} 0.979 \\ 0.9495 \\ 0.7899 \end{bmatrix}$.
+
+    \textbf{Summary of Results:}
+    The first two iterations yield:
+    \[
+    x^{(1)} = \begin{bmatrix} 0.9 \\ 0.79 \\ 0.758 \end{bmatrix}, \quad x^{(2)} = \begin{bmatrix} 0.979 \\ 0.9495 \\ 0.7899 \end{bmatrix}
+    \]
+\end{solution}
+
+
+
+\begin{problem}
+    Suppose that the positive definite matrix $A$ has the Cholesky factorization $A=LL^{T}$ and also the factorization $A=\hat{L}D\hat{L}^{T}$ where $D$ is a diagonal matrix with positive diagonal entries $d_{11},d_{22},\dots,d_{nn}$. Let $D^{1/2}$ be the diagonal matrix with diagonal entries $\sqrt{d_{11}},\sqrt{d_{22}},\dots,\sqrt{d_{nn}}$. Show that $L=\hat{L}D^{1/2}$.
+\end{problem}
+
+\begin{solution}
+    Let $A \in \R^{n \times n}$ be a symmetric positive definite matrix. We are given two factorizations of $A$:
+    \begin{enumerate}
+        \item The Cholesky factorization: $A = LL^T$, where $L$ is a lower triangular matrix with strictly positive diagonal entries ($l_{ii} > 0$).
+        \item The $LDL^T$ factorization: $A = \hat{L}D\hat{L}^T$, where $\hat{L}$ is a unit lower triangular matrix (lower triangular with $\hat{l}_{ii} = 1$ for all $i$) and $D$ is a diagonal matrix with positive diagonal entries $d_{ii} > 0$.
+    \end{enumerate}
+
+    Since $D$ is a diagonal matrix with strictly positive entries, we can define the matrix $D^{1/2}$ as the diagonal matrix whose entries are $\sqrt{d_{ii}}$. 
+    
+    Because $D^{1/2}$ is a diagonal matrix, it is symmetric, meaning $(D^{1/2})^T = D^{1/2}$. Therefore, we can write $D$ as:
+    \[
+    D = D^{1/2} D^{1/2} = D^{1/2} (D^{1/2})^T
+    \]
+
+    Substitute this expression for $D$ into the $LDL^T$ factorization of $A$:
+    \begin{align*}
+        A &= \hat{L} \left( D^{1/2} (D^{1/2})^T \right) \hat{L}^T \\
+        &= (\hat{L} D^{1/2}) ( (D^{1/2})^T \hat{L}^T )
+    \end{align*}
+
+    Using the matrix transpose property $(BC)^T = C^T B^T$, we know that $( (D^{1/2})^T \hat{L}^T ) = (\hat{L} D^{1/2})^T$. Substituting this back into our equation yields:
+    \[
+    A = (\hat{L} D^{1/2}) (\hat{L} D^{1/2})^T
+    \]
+
+    Let us define a new matrix $M = \hat{L} D^{1/2}$. The equation above shows that $A = MM^T$. 
+    
+    Now, we analyze the properties of $M$:
+    \begin{itemize}
+        \item Since $\hat{L}$ is a lower triangular matrix and $D^{1/2}$ is a diagonal matrix, their product $M$ is necessarily a lower triangular matrix.
+        \item The diagonal entries of $M$ are the products of the corresponding diagonal entries of $\hat{L}$ and $D^{1/2}$. That is, $m_{ii} = \hat{l}_{ii} \sqrt{d_{ii}}$.
+        \item Because $\hat{L}$ is a unit lower triangular matrix, $\hat{l}_{ii} = 1$. Thus, $m_{ii} = 1 \cdot \sqrt{d_{ii}} = \sqrt{d_{ii}}$. Since $d_{ii} > 0$, it follows that $m_{ii} > 0$.
+    \end{itemize}
+
+    We have shown that $M$ is a lower triangular matrix with strictly positive diagonal entries satisfying $A = MM^T$. 
+
+    By the uniqueness theorem of the Cholesky factorization, for any symmetric positive definite matrix $A$, there exists a \emph{unique} lower triangular matrix with strictly positive diagonal entries that satisfies $A = LL^T$. 
+    
+    Since both $L$ and $M$ satisfy these exact conditions, they must be the same matrix:
+    \[
+    L = M
+    \]
+    Substituting our definition of $M$ back in, we get:
+    \[
+    L = \hat{L}D^{1/2}
+    \]
+    This completes the proof.
+\end{solution}
+
+
+
+\begin{problem}
+    Prove that for any $x^{(0)}\in\mathbb{R}^{n}$, the sequence $\{x^{(k)}\}_{k=0}^{\infty}$ defined by
+    \[
+    x^{(k)}=Tx^{(k-1)}+c, \quad k\ge1,
+    \]
+    converges to the unique solution of $x=Tx+c$ if and only if $\rho(T)<1$. Here $\rho(T)$ denotes the spectral radius of $T$.
+\end{problem}
+
+\begin{solution}
+    Let $x$ be the exact, unique solution to the system $x = Tx + c$. We define the error vector at the $k$-th iteration as $e^{(k)} = x^{(k)} - x$.
+    
+    Using the iteration formula and the exact solution equation, we can write the error progression as:
+    \begin{align*}
+        e^{(k)} &= x^{(k)} - x \\
+        &= (Tx^{(k-1)} + c) - (Tx + c) \\
+        &= T(x^{(k-1)} - x) \\
+        &= Te^{(k-1)}
+    \end{align*}
+    
+    By applying this relationship recursively, we get:
+    \[
+    e^{(k)} = Te^{(k-1)} = T^2e^{(k-2)} = \dots = T^k e^{(0)}
+    \]
+    where $e^{(0)} = x^{(0)} - x$ is the initial error vector.
+    
+    The iterative method converges to the exact solution $x$ for any initial guess $x^{(0)}$ if and only if the error vector $e^{(k)}$ approaches the zero vector as $k \to \infty$ for any $e^{(0)} \in \R^n$. That is:
+    \[
+    \lim_{k \to \infty} e^{(k)} = \lim_{k \to \infty} T^k e^{(0)} = 0 \quad \text{for all } e^{(0)} \in \R^n
+    \]
+    
+    This condition holds if and only if the matrix sequence $T^k$ converges to the zero matrix:
+    \[
+    \lim_{k \to \infty} T^k = 0
+    \]
+    
+    \vspace{1em}
+    \textbf{Sufficiency ($\rho(T) < 1 \implies$ convergence):} \\
+    A fundamental theorem of linear algebra states that for any square matrix $T$, $\lim_{k \to \infty} T^k = 0$ if and only if the spectral radius $\rho(T) < 1$. 
+    Therefore, if $\rho(T) < 1$, we have $T^k \to 0$, which implies $e^{(k)} = T^k e^{(0)} \to 0$ for any choice of $x^{(0)}$. Hence, the iterative sequence converges to $x$.
+
+    \vspace{1em}
+    \textbf{Necessity (convergence $\implies \rho(T) < 1$):} \\
+    Assume that the sequence converges for any initial guess $x^{(0)}$. This means $e^{(k)} \to 0$ for any initial error $e^{(0)}$. 
+    Suppose, for the sake of contradiction, that $\rho(T) \ge 1$. Then there exists an eigenvalue $\lambda$ of $T$ such that $\abs{\lambda} \ge 1$. Let $v \neq 0$ be an eigenvector corresponding to $\lambda$, so $Tv = \lambda v$.
+    
+    Since the method converges for \emph{any} initial guess, we are free to choose an $x^{(0)}$ such that the initial error is $e^{(0)} = v$. Then:
+    \[
+    e^{(k)} = T^k e^{(0)} = T^k v = \lambda^k v
+    \]
+    Taking the norm yields $\norm{e^{(k)}} = \abs{\lambda}^k \norm{v}$. 
+    Because $\abs{\lambda} \ge 1$ and $v \neq 0$, the sequence $\norm{e^{(k)}}$ does not converge to $0$ as $k \to \infty$. This directly contradicts our assumption that the sequence converges for any initial guess. 
+    
+    Therefore, our assumption that $\rho(T) \ge 1$ must be false, meaning we must have $\rho(T) < 1$.
+    
+    \vspace{1em}
+    \textbf{Conclusion:} \\
+    We have shown both directions: convergence for any $x^{(0)}$ implies $\rho(T) < 1$, and $\rho(T) < 1$ implies convergence for any $x^{(0)}$. Thus, the sequence $\{x^{(k)}\}_{k=0}^{\infty}$ converges to the unique solution if and only if $\rho(T) < 1$.
+\end{solution}
+
+
+
+\begin{problem}
+    Prove that if a matrix $A$ is strictly diagonally dominant, then for any initial guess $x^{(0)}$ both the Jacobi and Gauss-Seidel methods generate sequences $\{x^{(k)}\}_{k=0}^{\infty}$ that converge to the unique solution of $Ax=b$.
+\end{problem}
+
+\solutionnewpagefalse % no newpage after the final solution
+\begin{solution}
+    Let $A \in \R^{n \times n}$ be a strictly diagonally dominant (SDD) matrix. By definition, for each $i \in \{1, 2, \dots, n\}$:
+    \begin{equation}
+        \abs{a_{ii}} > \sum_{\substack{j=1 \\ j \neq i}}^n \abs{a_{ij}} \label{eq:sdd_def}
+    \end{equation}
+    We split the matrix $A$ into $A = D - L - U$, where $D$ is the diagonal part of $A$, $-L$ is the strictly lower triangular part, and $-U$ is the strictly upper triangular part. Since $A$ is SDD, $a_{ii} \neq 0$ for all $i$, meaning $D$ is invertible.
+
+    As established in a previous problem, an iterative method $x^{(k)} = Tx^{(k-1)} + c$ converges to the unique solution for any initial guess $x^{(0)}$ if and only if the spectral radius $\rho(T) < 1$. We will show this holds for both methods.
+
+    \vspace{1em}
+    \textbf{1. Convergence of the Jacobi Method}
+    
+    The Jacobi iteration matrix is $T_J = D^{-1}(L+U)$. The elements of $T_J$ are given by:
+    \[
+    (T_J)_{ij} = 
+    \begin{cases} 
+        -\frac{a_{ij}}{a_{ii}} & \text{for } i \neq j \\
+        0 & \text{for } i = j 
+    \end{cases}
+    \]
+    We evaluate the infinity norm of $T_J$, which is the maximum absolute row sum:
+    \[
+    \norm{T_J}_\infty = \max_{1 \le i \le n} \sum_{j=1}^n \abs{(T_J)_{ij}} = \max_{1 \le i \le n} \sum_{\substack{j=1 \\ j \neq i}}^n \frac{\abs{a_{ij}}}{\abs{a_{ii}}}
+    \]
+    From the SDD condition \eqref{eq:sdd_def}, we have $\sum_{j \neq i} \abs{a_{ij}} < \abs{a_{ii}}$, which implies:
+    \[
+    \sum_{\substack{j=1 \\ j \neq i}}^n \frac{\abs{a_{ij}}}{\abs{a_{ii}}} < 1 \quad \text{for all } i.
+    \]
+    Therefore, $\norm{T_J}_\infty < 1$. Since the spectral radius is bounded by any induced matrix norm ($\rho(T_J) \le \norm{T_J}_\infty$), we conclude that $\rho(T_J) < 1$. Thus, the Jacobi method converges.
+
+    \vspace{1em}
+    \textbf{2. Convergence of the Gauss-Seidel Method}
+    
+    The Gauss-Seidel iteration matrix is $T_{GS} = (D-L)^{-1}U$. We will prove that $\rho(T_{GS}) < 1$ by contradiction.
+    
+    Let $\lambda$ be an eigenvalue of $T_{GS}$ with a corresponding non-zero eigenvector $v$. Then:
+    \begin{align*}
+        T_{GS} v &= \lambda v \\
+        (D-L)^{-1}U v &= \lambda v \\
+        U v &= \lambda(D-L) v \\
+        \lambda D v &= \lambda L v + U v
+    \end{align*}
+    Considering the $i$-th component of this vector equation, we have:
+    \[
+    \lambda a_{ii} v_i = -\lambda \sum_{j=1}^{i-1} a_{ij} v_j - \sum_{j=i+1}^n a_{ij} v_j
+    \]
+    Let $k$ be the index of the element in $v$ with the maximum absolute value, so $\abs{v_k} = \norm{v}_\infty$. Since $v \neq 0$, we know $\abs{v_k} > 0$. Taking the absolute value of the $k$-th equation and applying the triangle inequality yields:
+    \[
+    \abs{\lambda} \abs{a_{kk}} \abs{v_k} \le \abs{\lambda} \sum_{j=1}^{k-1} \abs{a_{kj}} \abs{v_j} + \sum_{j=k+1}^n \abs{a_{kj}} \abs{v_j}
+    \]
+    Assume for the sake of contradiction that $\abs{\lambda} \ge 1$. We divide the entire inequality by $\abs{\lambda} \abs{v_k}$ (which is strictly positive):
+    \[
+    \abs{a_{kk}} \le \sum_{j=1}^{k-1} \abs{a_{kj}} \frac{\abs{v_j}}{\abs{v_k}} + \frac{1}{\abs{\lambda}} \sum_{j=k+1}^n \abs{a_{kj}} \frac{\abs{v_j}}{\abs{v_k}}
+    \]
+    By our choice of $k$, we know $\frac{\abs{v_j}}{\abs{v_k}} \le 1$. Since we assumed $\abs{\lambda} \ge 1$, we also have $\frac{1}{\abs{\lambda}} \le 1$. Applying these bounds:
+    \[
+    \abs{a_{kk}} \le \sum_{j=1}^{k-1} \abs{a_{kj}} (1) + (1) \sum_{j=k+1}^n \abs{a_{kj}} = \sum_{\substack{j=1 \\ j \neq k}}^n \abs{a_{kj}}
+    \]
+    This inequality states that $\abs{a_{kk}} \le \sum_{j \neq k} \abs{a_{kj}}$, which directly contradicts the assumption that $A$ is strictly diagonally dominant. 
+    
+    Therefore, our assumption that $\abs{\lambda} \ge 1$ must be false. This means that every eigenvalue $\lambda$ of $T_{GS}$ must satisfy $\abs{\lambda} < 1$, which implies $\rho(T_{GS}) < 1$. Thus, the Gauss-Seidel method converges.
+\end{solution}
+
+
+
+
+\end{document}

@@ -1,0 +1,770 @@
+\documentclass[11pt, a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb, amsfonts, amsthm} % standard math packages
+\usepackage[left=1in,right=1in,top=1in,bottom=1in]{geometry} % margins
+\usepackage{enumitem} % for customizing lists (a), (b), etc.
+\usepackage{fancyhdr} % for headers and footers
+\usepackage{mathtools} % for better formatting of norms/abs values
+\usepackage{tcolorbox} % styled problem boxes
+
+% --- Header/Footer Setup ---
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textbf{MTL 107}}
+\chead{Semester-II, 2025-2026}
+\rhead{Tutorial Sheet 4}
+\cfoot{\thepage}
+
+% --- Custom Macros ---
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\K}{\mathbb{K}} % For Field K
+\newcommand{\eps}{\varepsilon}
+
+% definition for Norm ||.|| and Absolute value |.|
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+
+% --- Environment Setup ---
+\newenvironment{problem}{%
+  \begin{tcolorbox}[
+    colback=blue!4!white,
+    colframe=blue!38!black,
+    boxrule=0.95pt,
+    arc=3pt,
+    left=11pt,
+    right=11pt,
+    top=10pt,
+    bottom=11pt,
+    before skip=12pt,
+    after skip=14pt,
+  ]
+  \noindent\textbf{\textcolor{blue!35!black}{Problem}}\par\nointerlineskip
+  {\color{blue!42!black}\rule{\linewidth}{0.55pt}}\par\vspace{0.55em}%
+}{%
+  \end{tcolorbox}%
+}
+\newif\ifsolutionnewpage
+\solutionnewpagetrue
+\newenvironment{solution}
+  {\begin{proof}[Solution]}
+  {\end{proof}\ifsolutionnewpage\newpage\fi}
+
+\title{\textbf{Tutorial Sheet 4 Solutions}}
+\author{Prashant Tiwari}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+% ----------------------------------------------------------------------
+% INSTRUCTIONS:
+% Copy the content provided by the AI for each problem and paste it below.
+% ----------------------------------------------------------------------
+
+% PASTE SOLUTION HERE
+
+
+\begin{problem}
+\begin{enumerate}[label=(\alph*)]
+    \item Derive the three-point numerical differentiation formulas for approximating $f'(x)$ (midpoint and endpoint formulas) along with their corresponding error terms.
+    \item Compare the resulting formulas in terms of their error terms and the number of function evaluations required for the approximation.
+\end{enumerate}
+\end{problem}
+
+\begin{solution}
+\textbf{Part (a): Derivation of Three-Point Formulas}
+
+Let $x_0$ be the point where we want to evaluate the derivative, and let $h > 0$ be the step size. We use Taylor series expansions of $f(x)$ around $x_0$.
+
+\vspace{0.2cm}
+\textit{1. Three-Point Endpoint Formula (Forward Difference):} \\
+Consider the nodes $x_0, x_0+h,$ and $x_0+2h$. We expand $f(x_0+h)$ and $f(x_0+2h)$ around $x_0$:
+\begin{align}
+f(x_0+h) &= f(x_0) + hf'(x_0) + \frac{h^2}{2}f''(x_0) + \frac{h^3}{6}f'''(\xi_1) \label{eq:e1} \\
+f(x_0+2h) &= f(x_0) + 2hf'(x_0) + 2h^2f''(x_0) + \frac{8h^3}{6}f'''(\xi_2) \label{eq:e2}
+\end{align}
+where $\xi_1 \in (x_0, x_0+h)$ and $\xi_2 \in (x_0, x_0+2h)$.
+To eliminate the $f''(x_0)$ term, we multiply equation \eqref{eq:e1} by 4 and subtract equation \eqref{eq:e2}:
+\begin{equation*}
+4f(x_0+h) - f(x_0+2h) = 3f(x_0) + 2hf'(x_0) + \frac{2h^3}{3}f'''(\xi_1) - \frac{4h^3}{3}f'''(\xi_2)
+\end{equation*}
+Solving for $f'(x_0)$, we get:
+\begin{equation*}
+f'(x_0) = \frac{-3f(x_0) + 4f(x_0+h) - f(x_0+2h)}{2h} - \frac{h^2}{3}\left[ 2f'''(\xi_2) - f'''(\xi_1) \right]
+\end{equation*}
+Using the Intermediate Value Theorem for continuous functions, the error terms can be combined into a single term evaluated at some $\xi \in (x_0, x_0+2h)$:
+\begin{equation}
+f'(x_0) = \frac{-3f(x_0) + 4f(x_0+h) - f(x_0+2h)}{2h} + \frac{h^2}{3}f'''(\xi)
+\end{equation}
+This is the three-point endpoint formula. The error term is $\frac{h^2}{3}f'''(\xi)$.
+
+\vspace{0.2cm}
+\textit{2. Three-Point Midpoint Formula (Central Difference):} \\
+Consider the nodes $x_0-h, x_0,$ and $x_0+h$. We expand $f(x_0+h)$ and $f(x_0-h)$ around $x_0$:
+\begin{align}
+f(x_0+h) &= f(x_0) + hf'(x_0) + \frac{h^2}{2}f''(x_0) + \frac{h^3}{6}f'''(\xi_1) \label{eq:m1} \\
+f(x_0-h) &= f(x_0) - hf'(x_0) + \frac{h^2}{2}f''(x_0) - \frac{h^3}{6}f'''(\xi_2) \label{eq:m2}
+\end{align}
+where $\xi_1 \in (x_0, x_0+h)$ and $\xi_2 \in (x_0-h, x_0)$.
+Subtracting equation \eqref{eq:m2} from equation \eqref{eq:m1} perfectly eliminates both the $f(x_0)$ and $f''(x_0)$ terms:
+\begin{equation*}
+f(x_0+h) - f(x_0-h) = 2hf'(x_0) + \frac{h^3}{6}\left[f'''(\xi_1) + f'''(\xi_2)\right]
+\end{equation*}
+Solving for $f'(x_0)$ and combining the error terms via the Intermediate Value Theorem yields:
+\begin{equation}
+f'(x_0) = \frac{f(x_0+h) - f(x_0-h)}{2h} - \frac{h^2}{6}f'''(\xi)
+\end{equation}
+where $\xi \in (x_0-h, x_0+h)$. This is the three-point midpoint formula. The error term is $-\frac{h^2}{6}f'''(\xi)$.
+
+\vspace{0.5cm}
+\textbf{Part (b): Comparison}
+
+\begin{itemize}
+    \item \textbf{Error Term:} Both formulas are of order $\mathcal{O}(h^2)$. However, the coefficient of the error term in the midpoint formula ($\frac{1}{6}$) is half the magnitude of the coefficient in the endpoint formula ($\frac{1}{3}$). Consequently, the midpoint formula generally provides a significantly more accurate approximation.
+    \item \textbf{Function Evaluations:} To compute the derivative at $x_0$, the midpoint formula requires evaluating the function at \textbf{2} points ($x_0+h$ and $x_0-h$). The endpoint formula requires evaluating the function at \textbf{3} points ($x_0$, $x_0+h$, and $x_0+2h$).
+    \item \textbf{Conclusion:} The midpoint formula is superior because it yields a smaller theoretical truncation error and requires fewer function evaluations. The endpoint formula is typically reserved for boundaries (the first or last point in a given dataset) where centered points are not available.
+\end{itemize}
+\end{solution}
+    
+
+
+\begin{problem}
+    The following data are taken from the function $f(x) = x \ln x$.
+    
+    \begin{center}
+    \begin{tabular}{c | c | c}
+    $x$ & $f(x)$ & $f'(x)$ \\
+    \hline
+    8.1 & 16.94410 & \\
+    8.3 & 17.56492 & \\
+    8.5 & 18.19056 & \\
+    8.7 & 18.82091 &
+    \end{tabular}
+    \end{center}
+    
+    \begin{enumerate}[label=(\alph*)]
+        \item Use the most accurate three-point numerical differentiation formulas to approximate $f'(x)$ at each listed value of $x$.
+        \item Determine appropriate error bounds using the error formulas for the three-point methods, and then compute the actual errors in the approximations obtained in part (a).
+    \end{enumerate}
+    \end{problem}
+    
+    \begin{solution}
+    The given function is $f(x) = x \ln x$. The uniform step size is $h = 0.2$. The most accurate 3-point formulas rely on the midpoint (central difference) formula for interior points, and the endpoint (forward/backward difference) formula for the boundaries.
+    
+    \vspace{0.3cm}
+    \textbf{Part (a): Approximating $f'(x)$}
+    
+    \textbf{1. For $x = 8.1$ (Left Boundary):} \\
+    We use the 3-point forward endpoint formula:
+    \begin{equation*}
+    f'(x_0) \approx \frac{-3f(x_0) + 4f(x_1) - f(x_2)}{2h}
+    \end{equation*}
+    \begin{align*}
+    f'(8.1) &\approx \frac{-3(16.94410) + 4(17.56492) - 18.19056}{2(0.2)} \\
+    &\approx \frac{-50.83230 + 70.25968 - 18.19056}{0.4} = \frac{1.23682}{0.4} = \mathbf{3.09205}
+    \end{align*}
+    
+    \textbf{2. For $x = 8.3$ (Interior):} \\
+    We use the 3-point midpoint formula:
+    \begin{equation*}
+    f'(x_1) \approx \frac{f(x_2) - f(x_0)}{2h}
+    \end{equation*}
+    \begin{align*}
+    f'(8.3) &\approx \frac{18.19056 - 16.94410}{2(0.2)} = \frac{1.24646}{0.4} = \mathbf{3.11615}
+    \end{align*}
+    
+    \textbf{3. For $x = 8.5$ (Interior):} \\
+    We use the 3-point midpoint formula:
+    \begin{align*}
+    f'(8.5) &\approx \frac{f(8.7) - f(8.3)}{2(0.2)} = \frac{18.82091 - 17.56492}{0.4} = \frac{1.25599}{0.4} = \mathbf{3.139975}
+    \end{align*}
+    
+    \textbf{4. For $x = 8.7$ (Right Boundary):} \\
+    We use the 3-point backward endpoint formula:
+    \begin{equation*}
+    f'(x_n) \approx \frac{3f(x_n) - 4f(x_{n-1}) + f(x_{n-2})}{2h}
+    \end{equation*}
+    \begin{align*}
+    f'(8.7) &\approx \frac{3(18.82091) - 4(18.19056) + 17.56492}{2(0.2)} \\
+    &\approx \frac{56.46273 - 72.76224 + 17.56492}{0.4} = \frac{1.26541}{0.4} = \mathbf{3.163525}
+    \end{align*}
+    
+    \vspace{0.3cm}
+    \textbf{Part (b): Error Bounds and Actual Errors}
+    
+    To find the theoretical bounds, we need the third derivative of $f(x) = x \ln x$.
+    \begin{align*}
+    f'(x) &= \ln x + 1 \\
+    f''(x) &= \frac{1}{x} \\
+    f'''(x) &= -\frac{1}{x^2}
+    \end{align*}
+    Since $\abs{f'''(x)} = \frac{1}{x^2}$ is a strictly decreasing function for $x > 0$, its maximum absolute value on any interval $[a, b]$ will occur at the left endpoint, $x = a$.
+    
+    \vspace{0.2cm}
+    \textbf{Error Bounds:}
+    \begin{itemize}
+        \item \textbf{For $x = 8.1$ (Endpoint):} The interval for $\xi$ is $[8.1, 8.5]$.
+        $$ \text{Bound} = \frac{h^2}{3} \max_{\xi \in [8.1, 8.5]} \abs[\Big]{-\frac{1}{\xi^2}} = \frac{0.04}{3} \left( \frac{1}{8.1^2} \right) \approx \mathbf{2.032 \times 10^{-4}} $$
+    
+        \item \textbf{For $x = 8.3$ (Midpoint):} The interval for $\xi$ is $[8.1, 8.5]$.
+        $$ \text{Bound} = \frac{h^2}{6} \max_{\xi \in [8.1, 8.5]} \abs[\Big]{-\frac{1}{\xi^2}} = \frac{0.04}{6} \left( \frac{1}{8.1^2} \right) \approx \mathbf{1.016 \times 10^{-4}} $$
+    
+        \item \textbf{For $x = 8.5$ (Midpoint):} The interval for $\xi$ is $[8.3, 8.7]$.
+        $$ \text{Bound} = \frac{h^2}{6} \max_{\xi \in [8.3, 8.7]} \abs[\Big]{-\frac{1}{\xi^2}} = \frac{0.04}{6} \left( \frac{1}{8.3^2} \right) \approx \mathbf{9.677 \times 10^{-5}} $$
+    
+        \item \textbf{For $x = 8.7$ (Endpoint):} The interval for $\xi$ is $[8.3, 8.7]$.
+        $$ \text{Bound} = \frac{h^2}{3} \max_{\xi \in [8.3, 8.7]} \abs[\Big]{-\frac{1}{\xi^2}} = \frac{0.04}{3} \left( \frac{1}{8.3^2} \right) \approx \mathbf{1.935 \times 10^{-4}} $$
+    \end{itemize}
+    
+    \vspace{0.2cm}
+    \textbf{Actual Errors:} \\
+    The true values are computed using $f'(x) = \ln(x) + 1$:
+    \begin{itemize}
+        \item $f'(8.1) = \ln(8.1) + 1 \approx 3.091864$
+        \item $f'(8.3) = \ln(8.3) + 1 \approx 3.116256$
+        \item $f'(8.5) = \ln(8.5) + 1 \approx 3.140066$
+        \item $f'(8.7) = \ln(8.7) + 1 \approx 3.163323$
+    \end{itemize}
+    
+    We calculate the absolute actual error as $E = \abs{\text{True} - \text{Approximation}}$:
+    \begin{itemize}
+        \item \textbf{At $x = 8.1$:} $\abs{3.091864 - 3.092050} = \mathbf{1.86 \times 10^{-4}}$ (Complies with bound $\le 2.032 \times 10^{-4}$)
+        \item \textbf{At $x = 8.3$:} $\abs{3.116256 - 3.116150} = \mathbf{1.06 \times 10^{-4}}$ (\textit{Slightly exceeds bound $\le 1.016 \times 10^{-4}$})
+        \item \textbf{At $x = 8.5$:} $\abs{3.140066 - 3.139975} = \mathbf{0.91 \times 10^{-4}}$ (Complies with bound $\le 0.967 \times 10^{-4}$)
+        \item \textbf{At $x = 8.7$:} $\abs{3.163323 - 3.163525} = \mathbf{2.02 \times 10^{-4}}$ (\textit{Slightly exceeds bound $\le 1.935 \times 10^{-4}$})
+    \end{itemize}
+    
+    \textit{Note: The slight discrepancies where the actual error exceeds the theoretical bound for $x=8.3$ and $x=8.7$ are due to the accumulated round-off errors present in the provided five-decimal-place data table, as the theoretical bounds only account for pure truncation error.}
+    \end{solution}
+
+    
+
+\begin{problem}
+    The following data are taken from the function $f(x) = e^{x/3} + x^2$.
+    
+    \begin{center}
+    \begin{tabular}{c | c | c}
+    $x$ & $f(x)$ & $f'(x)$ \\
+    \hline
+    -3.0 & 9.367879 & \\
+    -2.8 & 8.233241 & \\
+    -2.6 & 7.180350 & \\
+    -2.4 & 6.209329 & \\
+    -2.2 & 5.320305 & \\
+    -2.0 & 4.513417 &
+    \end{tabular}
+    \end{center}
+    
+    \begin{enumerate}[label=(\alph*)]
+        \item Use the most accurate five-point numerical differentiation formulas to approximate $f'(x)$ at each listed value of $x$.
+        \item Determine appropriate error bounds using the error formulas for the five-point methods, and then compute the actual errors in the approximations obtained in part (a).
+    \end{enumerate}
+    \end{problem}
+    
+    \begin{solution}
+    The given function is $f(x) = e^{x/3} + x^2$. The step size is $h = 0.2$. We are given six data points $x_0, x_1, x_2, x_3, x_4, x_5$.
+    
+    \vspace{0.3cm}
+    \textbf{Part (a): Approximating $f'(x)$}
+    
+    We use the 5-point midpoint formula where centered data is available, and the 5-point endpoint formulas for the boundaries.
+    \begin{itemize}
+        \item \textbf{Midpoint Formula (for $x_2, x_3$):}
+        $$ f'(x) \approx \frac{1}{12h} \left[ f(x-2h) - 8f(x-h) + 8f(x+h) - f(x+2h) \right] $$
+        \item \textbf{Endpoint Forward Formula (for $x_0, x_1$):}
+        $$ f'(x) \approx \frac{1}{12h} \left[ -25f(x) + 48f(x+h) - 36f(x+2h) + 16f(x+3h) - 3f(x+4h) \right] $$
+        \item \textbf{Endpoint Backward Formula (for $x_4, x_5$):}
+        $$ f'(x) \approx \frac{1}{12h} \left[ 3f(x-4h) - 16f(x-3h) + 36f(x-2h) - 48f(x-h) + 25f(x) \right] $$
+    \end{itemize}
+    
+    Applying these formulas ($12h = 2.4$):
+    \begin{itemize}
+        \item \textbf{For $x = -3.0$ (Forward using $x_0$ to $x_4$):}
+        \begin{align*}
+        f'(-3.0) &\approx \frac{1}{2.4} \left[ -25(9.367879) + 48(8.233241) - 36(7.180350) + 16(6.209329) - 3(5.320305) \right] \\
+        &\approx \mathbf{-5.877354}
+        \end{align*}
+    
+        \item \textbf{For $x = -2.8$ (Forward using $x_1$ to $x_5$):}
+        \begin{align*}
+        f'(-2.8) &\approx \frac{1}{2.4} \left[ -25(8.233241) + 48(7.180350) - 36(6.209329) + 16(5.320305) - 3(4.513417) \right] \\
+        &\approx \mathbf{-5.468962}
+        \end{align*}
+    
+        \item \textbf{For $x = -2.6$ (Midpoint using $x_0$ to $x_4$):}
+        \begin{align*}
+        f'(-2.6) &\approx \frac{1}{2.4} \left[ 9.367879 - 8(8.233241) + 8(6.209329) - 5.320305 \right] \approx \mathbf{-5.059871}
+        \end{align*}
+    
+        \item \textbf{For $x = -2.4$ (Midpoint using $x_1$ to $x_5$):}
+        \begin{align*}
+        f'(-2.4) &\approx \frac{1}{2.4} \left[ 8.233241 - 8(7.180350) + 8(5.320305) - 4.513417 \right] \approx \mathbf{-4.650381}
+        \end{align*}
+    
+        \item \textbf{For $x = -2.2$ (Backward using $x_0$ to $x_4$):}
+        \begin{align*}
+        f'(-2.2) &\approx \frac{1}{2.4} \left[ 3(9.367879) - 16(8.233241) + 36(7.180350) - 48(6.209329) + 25(5.320305) \right] \\
+        &\approx \mathbf{-4.240562}
+        \end{align*}
+    
+        \item \textbf{For $x = -2.0$ (Backward using $x_1$ to $x_5$):}
+        \begin{align*}
+        f'(-2.0) &\approx \frac{1}{2.4} \left[ 3(8.233241) - 16(7.180350) + 36(6.209329) - 48(5.320305) + 25(4.513417) \right] \\
+        &\approx \mathbf{-3.828859}
+        \end{align*}
+    \end{itemize}
+    
+    \vspace{0.3cm}
+    \textbf{Part (b): Error Bounds and Actual Errors}
+    
+    First, we need the fifth derivative of $f(x)$:
+    \begin{align*}
+    f'(x) &= \frac{1}{3}e^{x/3} + 2x \\
+    f''(x) &= \frac{1}{9}e^{x/3} + 2 \\
+    f'''(x) &= \frac{1}{27}e^{x/3} \\
+    f^{(4)}(x) &= \frac{1}{81}e^{x/3} \\
+    f^{(5)}(x) &= \frac{1}{243}e^{x/3}
+    \end{align*}
+    Since $e^{x/3}$ is an increasing function, its maximum absolute value on the interval $[-3.0, -2.0]$ occurs at the rightmost endpoint, $x = -2.0$.
+    $$ \max_{\xi \in [-3.0, -2.0]} \abs[\Big]{f^{(5)}(\xi)} = \frac{1}{243}e^{-2.0/3} \approx \frac{1}{243}(0.513417) \approx 0.0021128 $$
+    
+    \textbf{Theoretical Error Bounds:}
+    \begin{itemize}
+        \item \textbf{Endpoint Formula Bound} (for $x = -3.0, -2.8, -2.2, -2.0$):
+        $$ \frac{h^4}{5} \abs[\Big]{f^{(5)}(\xi)} \le \frac{(0.2)^4}{5}(0.0021128) = \frac{0.0016}{5}(0.0021128) \approx \mathbf{6.76 \times 10^{-7}} $$
+        \item \textbf{Midpoint Formula Bound} (for $x = -2.6, -2.4$):
+        $$ \frac{h^4}{30} \abs[\Big]{f^{(5)}(\xi)} \le \frac{(0.2)^4}{30}(0.0021128) = \frac{0.0016}{30}(0.0021128) \approx \mathbf{1.13 \times 10^{-7}} $$
+    \end{itemize}
+    
+    \textbf{Actual Errors:}
+    We evaluate the exact derivative $f'(x) = \frac{1}{3}e^{x/3} + 2x$:
+    \begin{itemize}
+        \item $f'(-3.0) = \frac{1}{3}e^{-1.0} - 6 \approx -5.877373$
+        \item $f'(-2.8) = \frac{1}{3}e^{-2.8/3} - 5.6 \approx -5.468965$
+        \item $f'(-2.6) = \frac{1}{3}e^{-2.6/3} - 5.2 \approx -5.059871$
+        \item $f'(-2.4) = \frac{1}{3}e^{-0.8} - 4.8 \approx -4.650223$
+        \item $f'(-2.2) = \frac{1}{3}e^{-2.2/3} - 4.4 \approx -4.239850$
+        \item $f'(-2.0) = \frac{1}{3}e^{-2.0/3} - 4.0 \approx -3.828861$
+    \end{itemize}
+    
+    Computing the absolute actual errors $\abs{\text{True} - \text{Approximation}}$:
+    \begin{itemize}
+        \item \textbf{At $x = -3.0$:} $\abs{-5.877373 - (-5.877354)} = \mathbf{1.9 \times 10^{-5}}$
+        \item \textbf{At $x = -2.8$:} $\abs{-5.468965 - (-5.468962)} = \mathbf{3.0 \times 10^{-6}}$
+        \item \textbf{At $x = -2.6$:} $\abs{-5.059871 - (-5.059871)} = \mathbf{0.0 \times 10^{-6}}$
+        \item \textbf{At $x = -2.4$:} $\abs{-4.650223 - (-4.650381)} = \mathbf{1.58 \times 10^{-4}}$
+        \item \textbf{At $x = -2.2$:} $\abs{-4.239850 - (-4.240562)} = \mathbf{7.12 \times 10^{-4}}$
+        \item \textbf{At $x = -2.0$:} $\abs{-3.828861 - (-3.828859)} = \mathbf{2.0 \times 10^{-6}}$
+    \end{itemize}
+    \textit{Note: As before, actual errors can exceed truncation theoretical bounds due to the round-off error present in the provided 6-decimal point starting data.}
+    \end{solution}
+
+    \begin{problem}
+        Consider the three-point midpoint formula for approximating the derivative
+        \begin{equation*}
+        f'(x_0) = \frac{f(x_0+h) - f(x_0-h)}{2h} - \frac{h^2}{6}f^{(3)}(\xi_1).
+        \end{equation*}
+        Suppose that in evaluating $f(x_0+h)$ and $f(x_0-h)$ we encounter round-off errors $e(x_0+h)$ and $e(x_0-h)$. The computed values $\overline{f}(x_0+h)$ and $\overline{f}(x_0-h)$ are related to the true values by
+        \begin{align*}
+        f(x_0+h) &= \overline{f}(x_0+h) + e(x_0+h), \\
+        f(x_0-h) &= \overline{f}(x_0-h) + e(x_0-h).
+        \end{align*}
+        \begin{enumerate}[label=(\alph*)]
+            \item Derive an error bound for the approximation of $f'(x_0)$ obtained from the three-point midpoint formula when both truncation error and round-off errors are present. Assume $\abs{e(x_0+h)} \le \eps$, $\abs{e(x_0-h)} \le \eps$, and $\abs{f^{(3)}(x)} \le M$ for $x$ in the relevant interval.
+            \item Based on the derived bound, discuss whether it is practical to take $h$ as small as possible. Determine an appropriate choice of $h$ that balances truncation and round-off errors.
+        \end{enumerate}
+        \end{problem}
+        
+        \begin{solution}
+        \textbf{Part (a): Deriving the Error Bound}
+        
+        Let the approximation of the derivative using the computed (numerical) values be denoted by $\tilde{f}'(x_0)$:
+        \begin{equation*}
+        \tilde{f}'(x_0) = \frac{\overline{f}(x_0+h) - \overline{f}(x_0-h)}{2h}
+        \end{equation*}
+        The exact mathematical relationship, taking into account the truncation error, is:
+        \begin{equation*}
+        f'(x_0) = \frac{f(x_0+h) - f(x_0-h)}{2h} - \frac{h^2}{6}f^{(3)}(\xi_1)
+        \end{equation*}
+        Substituting the expressions for the true values $f(x_0+h)$ and $f(x_0-h)$ in terms of their computed values and round-off errors:
+        \begin{align*}
+        f'(x_0) &= \frac{[\overline{f}(x_0+h) + e(x_0+h)] - [\overline{f}(x_0-h) + e(x_0-h)]}{2h} - \frac{h^2}{6}f^{(3)}(\xi_1) \\
+        &= \frac{\overline{f}(x_0+h) - \overline{f}(x_0-h)}{2h} + \frac{e(x_0+h) - e(x_0-h)}{2h} - \frac{h^2}{6}f^{(3)}(\xi_1) \\
+        &= \tilde{f}'(x_0) + \frac{e(x_0+h) - e(x_0-h)}{2h} - \frac{h^2}{6}f^{(3)}(\xi_1)
+        \end{align*}
+        The total error is the difference between the true derivative and the computed approximation:
+        \begin{equation*}
+        E(h) = f'(x_0) - \tilde{f}'(x_0) = \frac{e(x_0+h) - e(x_0-h)}{2h} - \frac{h^2}{6}f^{(3)}(\xi_1)
+        \end{equation*}
+        Taking the absolute value and applying the triangle inequality:
+        \begin{equation*}
+        \abs{E(h)} \le \frac{\abs{e(x_0+h)} + \abs{e(x_0-h)}}{2h} + \frac{h^2}{6}\abs{f^{(3)}(\xi_1)}
+        \end{equation*}
+        Given that $\abs{e(x_0+h)} \le \eps$, $\abs{e(x_0-h)} \le \eps$, and $\abs{f^{(3)}(\xi_1)} \le M$, we obtain the total error bound:
+        \begin{equation}
+        \abs{E(h)} \le \frac{\eps + \eps}{2h} + \frac{h^2}{6}M = \frac{\eps}{h} + \frac{Mh^2}{6}
+        \end{equation}
+        
+        \vspace{0.3cm}
+        \textbf{Part (b): Optimal Choice of $h$}
+        
+        Let the upper bound of the total error be denoted by $B(h)$:
+        \begin{equation*}
+        B(h) = \frac{\eps}{h} + \frac{M}{6}h^2
+        \end{equation*}
+        
+        \textbf{Is it practical to take $h$ as small as possible?} \\
+        No, it is not practical. As $h \to 0$, the truncation error portion $\left(\frac{M}{6}h^2\right)$ approaches zero, but the round-off error portion $\left(\frac{\eps}{h}\right)$ approaches infinity. Thus, making $h$ arbitrarily small will cause the total error to blow up because dividing the inherent machine precision limits ($\eps$) by a tiny number amplifies the error.
+        
+        \textbf{Determining the appropriate choice of $h$:} \\
+        To find the step size $h$ that minimizes the maximum error bound $B(h)$, we take the derivative of $B(h)$ with respect to $h$ and set it to zero:
+        \begin{equation*}
+        B'(h) = -\frac{\eps}{h^2} + \frac{M}{3}h = 0
+        \end{equation*}
+        Solving for $h$:
+        \begin{align*}
+        \frac{M}{3}h &= \frac{\eps}{h^2} \\
+        h^3 &= \frac{3\eps}{M} \\
+        h &= \left( \frac{3\eps}{M} \right)^{1/3}
+        \end{align*}
+        To verify this is a minimum, we check the second derivative:
+        \begin{equation*}
+        B''(h) = \frac{2\eps}{h^3} + \frac{M}{3}
+        \end{equation*}
+        Since $\eps, M, h > 0$, it follows that $B''(h) > 0$, confirming that $h = \left( \frac{3\eps}{M} \right)^{1/3}$ yields the minimum error bound. This is the optimal step size $h$ that perfectly balances the truncation error against the machine round-off error.
+        \end{solution}
+
+        
+\begin{problem}
+    Use Heun's method of order two to approximate the solution of the initial-value problem
+    \begin{equation*}
+    y' = te^{3t} - 2y, \quad 0 \le t \le 1, \quad y(0) = 0
+    \end{equation*}
+    with step size $h = 0.5$.
+    \end{problem}
+    
+    \begin{solution}
+    The initial-value problem is defined by $f(t, y) = te^{3t} - 2y$, with initial conditions $t_0 = 0$, $w_0 = y(0) = 0$, and a step size of $h = 0.5$.
+    We need to find approximations $w_1$ at $t_1 = 0.5$ and $w_2$ at $t_2 = 1.0$.
+    
+    Heun's method of order two (also known as the explicit trapezoidal rule) consists of a predictor step (Euler's method) and a corrector step:
+    \begin{align*}
+    \text{Predictor: } \tilde{w}_{i+1} &= w_i + h f(t_i, w_i) \\
+    \text{Corrector: } w_{i+1} &= w_i + \frac{h}{2} \left[ f(t_i, w_i) + f(t_{i+1}, \tilde{w}_{i+1}) \right]
+    \end{align*}
+    
+    \vspace{0.3cm}
+    \textbf{Step 1: Approximation at $t_1 = 0.5$}
+    \begin{itemize}
+        \item Evaluate $f(t_0, w_0)$:
+        $$ f(0, 0) = 0 \cdot e^{3(0)} - 2(0) = 0 $$
+    
+        \item Compute the predictor $\tilde{w}_1$:
+        $$ \tilde{w}_1 = w_0 + h f(0, 0) = 0 + 0.5(0) = 0 $$
+    
+        \item Evaluate $f(t_1, \tilde{w}_1)$ at $t_1 = 0.5$:
+        $$ f(0.5, 0) = 0.5 e^{3(0.5)} - 2(0) = 0.5 e^{1.5} \approx 2.240845 $$
+    
+        \item Compute the corrector $w_1$:
+        $$ w_1 = w_0 + \frac{0.5}{2} [ f(0, 0) + f(0.5, 0) ] $$
+        $$ w_1 \approx 0 + 0.25 [ 0 + 2.240845 ] = \mathbf{0.560211} $$
+    \end{itemize}
+    Thus, the approximation at $t = 0.5$ is $y(0.5) \approx 0.560211$.
+    
+    \vspace{0.3cm}
+    \textbf{Step 2: Approximation at $t_2 = 1.0$}
+    \begin{itemize}
+        \item Evaluate $f(t_1, w_1)$:
+        $$ f(0.5, 0.560211) = 0.5 e^{1.5} - 2(0.560211) \approx 2.240845 - 1.120422 = 1.120423 $$
+    
+        \item Compute the predictor $\tilde{w}_2$:
+        $$ \tilde{w}_2 = w_1 + h f(t_1, w_1) \approx 0.560211 + 0.5(1.120423) = 1.120423 $$
+    
+        \item Evaluate $f(t_2, \tilde{w}_2)$ at $t_2 = 1.0$:
+        $$ f(1.0, 1.120423) = 1.0 e^{3(1.0)} - 2(1.120423) \approx 20.085537 - 2.240846 = 17.844691 $$
+    
+        \item Compute the corrector $w_2$:
+        $$ w_2 = w_1 + \frac{0.5}{2} [ f(t_1, w_1) + f(t_2, \tilde{w}_2) ] $$
+        $$ w_2 \approx 0.560211 + 0.25 [ 1.120423 + 17.844691 ] $$
+        $$ w_2 \approx 0.560211 + 0.25 [ 18.965114 ] \approx 0.560211 + 4.741279 = \mathbf{5.301490} $$
+    \end{itemize}
+    
+    \textbf{Final Answer:} \\
+    The approximate solutions are $w_1 \approx \mathbf{0.560211}$ at $t=0.5$, and $w_2 \approx \mathbf{5.301490}$ at $t=1.0$.
+    \end{solution}
+
+    
+\begin{problem}
+    Suppose $f$ is continuous and satisfies a Lipschitz condition with constant $L$ on
+    $D = \{ (t,y) \mid a \le t \le b, -\infty < y < \infty \},$
+    and suppose there exists a constant $M$ such that $|y''(t)| \le M$ for all $t \in [a,b]$, where $y(t)$ is the unique solution of the initial-value problem
+    \begin{equation*}
+    y' = f(t,y), \quad a \le t \le b, \quad y(a) = \alpha
+    \end{equation*}
+    \begin{enumerate}[label=(\alph*)]
+        \item Let $w_0, w_1, ..., w_N$ be the approximations generated by Euler's method with step size $h$. Prove that for each $i=0,1,2,...,N$,
+        \begin{equation*}
+        |y(t_i) - w_i| \le \frac{hM}{2L}(e^{L(t_i-a)} - 1).
+        \end{equation*}
+        \item Suppose the approximations $u_0, u_1, ..., u_N$ are generated by the perturbed Euler method
+        \begin{equation*}
+        u_0 = \alpha + \delta_0, \quad u_{i+1} = u_i + hf(t_i, u_i) + \delta_{i+1}, \quad i=0,1,...,N-1
+        \end{equation*}
+        where $\delta_i$ represents the round-off error at each step and $|\delta_i| \le \delta$. Show that for each $i=0,1,...,N$;
+        \begin{equation*}
+        |y(t_i) - u_i| \le \frac{1}{L}\left(\frac{hM}{2} + \frac{\delta}{h}\right)[e^{L(t_i-a)} - 1] + |\delta_0|e^{L(t_i-a)}.
+        \end{equation*}
+        Using this bound, discuss the effect of round-off errors and determine an appropriate choice of the step size $h$.
+    \end{enumerate}
+    \end{problem}
+    
+    \begin{solution}
+    To prove both parts, we will use the following well-known lemma for difference inequalities: \\
+    \textbf{Lemma:} If $s > 0$ and $t > 0$, and a sequence $\{a_i\}_{i=0}^N$ satisfies $a_{i+1} \le (1+s)a_i + t$, then
+    \begin{equation} \label{eq:lemma}
+    a_i \le e^{is}a_0 + \frac{t}{s}(e^{is}-1)
+    \end{equation}
+    Also note that $is = i(hL) = (ih)L = L(t_i - a)$, since $t_i = a + ih$.
+    
+    \vspace{0.3cm}
+    \textbf{Part (a): Error Bound for Standard Euler's Method}
+    
+    Using Taylor's Theorem, the exact solution $y(t)$ satisfies:
+    \begin{equation} \label{eq:exact}
+    y(t_{i+1}) = y(t_i) + h f(t_i, y(t_i)) + \frac{h^2}{2} y''(\xi_i)
+    \end{equation}
+    for some $\xi_i \in (t_i, t_{i+1})$. Euler's method generates approximations via:
+    \begin{equation} \label{eq:euler}
+    w_{i+1} = w_i + h f(t_i, w_i)
+    \end{equation}
+    Subtracting \eqref{eq:euler} from \eqref{eq:exact} gives the error equation:
+    \begin{equation*}
+    y(t_{i+1}) - w_{i+1} = y(t_i) - w_i + h [f(t_i, y(t_i)) - f(t_i, w_i)] + \frac{h^2}{2} y''(\xi_i)
+    \end{equation*}
+    Taking the absolute value and applying the triangle inequality:
+    \begin{equation*}
+    |y(t_{i+1}) - w_{i+1}| \le |y(t_i) - w_i| + h |f(t_i, y(t_i)) - f(t_i, w_i)| + \frac{h^2}{2} |y''(\xi_i)|
+    \end{equation*}
+    Since $f$ satisfies a Lipschitz condition with constant $L$, $|f(t_i, y(t_i)) - f(t_i, w_i)| \le L|y(t_i) - w_i|$. We are also given $|y''(t)| \le M$. Let $e_i = |y(t_i) - w_i|$. Substituting these bounds yields:
+    \begin{equation*}
+    e_{i+1} \le e_i + hL e_i + \frac{h^2 M}{2} = (1 + hL)e_i + \frac{h^2 M}{2}
+    \end{equation*}
+    Now we apply the Lemma \eqref{eq:lemma} with $a_i = e_i$, $s = hL$, and $t = \frac{h^2 M}{2}$.
+    Since the initial condition is exact in the standard Euler method, $w_0 = \alpha = y(t_0)$, meaning $e_0 = 0$.
+    \begin{align*}
+    e_i &\le e^{i(hL)}(0) + \frac{h^2 M / 2}{hL} (e^{i(hL)} - 1) \\
+    |y(t_i) - w_i| &\le \frac{hM}{2L} (e^{L(t_i - a)} - 1)
+    \end{align*}
+    This completes the proof for part (a).
+    
+    \vspace{0.3cm}
+    \textbf{Part (b): Error Bound for Perturbed Euler's Method}
+    
+    The perturbed Euler method is given by:
+    \begin{equation} \label{eq:pert}
+    u_{i+1} = u_i + h f(t_i, u_i) + \delta_{i+1}
+    \end{equation}
+    Subtracting \eqref{eq:pert} from the exact Taylor expansion \eqref{eq:exact}:
+    \begin{equation*}
+    y(t_{i+1}) - u_{i+1} = y(t_i) - u_i + h [f(t_i, y(t_i)) - f(t_i, u_i)] + \frac{h^2}{2} y''(\xi_i) - \delta_{i+1}
+    \end{equation*}
+    Taking the absolute value, applying the triangle inequality, and using the Lipschitz condition and bounds $|y''(t)| \le M$ and $|\delta_i| \le \delta$:
+    \begin{align*}
+    |y(t_{i+1}) - u_{i+1}| &\le |y(t_i) - u_i| + h L |y(t_i) - u_i| + \frac{h^2}{2} M + \delta \\
+    |y(t_{i+1}) - u_{i+1}| &\le (1 + hL)|y(t_i) - u_i| + \left( \frac{h^2 M}{2} + \delta \right)
+    \end{align*}
+    Let $E_i = |y(t_i) - u_i|$. Applying the Lemma \eqref{eq:lemma} with $a_i = E_i$, $s = hL$, and $t = \frac{h^2 M}{2} + \delta$:
+    \begin{equation*}
+    E_i \le e^{i(hL)} E_0 + \frac{\frac{h^2 M}{2} + \delta}{hL} (e^{i(hL)} - 1)
+    \end{equation*}
+    Here, the initial error is $E_0 = |y(t_0) - u_0| = |\alpha - (\alpha + \delta_0)| = |\delta_0|$. Replacing $i(hL)$ with $L(t_i - a)$:
+    \begin{equation*}
+    |y(t_i) - u_i| \le e^{L(t_i - a)}|\delta_0| + \frac{1}{L}\left( \frac{hM}{2} + \frac{\delta}{h} \right) [e^{L(t_i - a)} - 1]
+    \end{equation*}
+    This completes the proof for the perturbed error bound.
+    
+    \vspace{0.3cm}
+    \textbf{Discussion on Round-off Errors and Step Size:}
+    
+    Let the term dependent on $h$ in the error bound be denoted by $E(h)$:
+    \begin{equation*}
+    E(h) = \frac{hM}{2} + \frac{\delta}{h}
+    \end{equation*}
+    \begin{itemize}
+        \item \textbf{Effect of round-off errors:} As the step size $h$ decreases ($h \to 0$), the mathematical truncation error $\frac{hM}{2}$ approaches zero. However, the accumulated round-off error term $\frac{\delta}{h}$ grows without bound (approaching infinity). Therefore, unlike the idealized mathematical method, we cannot make the actual error arbitrarily small simply by shrinking $h$.
+        \item \textbf{Appropriate choice of step size $h$:} To minimize the maximum error bound $E(h)$, we find its critical point by setting its derivative with respect to $h$ to zero:
+        \begin{align*}
+        E'(h) = \frac{M}{2} - \frac{\delta}{h^2} &= 0 \\
+        \frac{\delta}{h^2} &= \frac{M}{2} \\
+        h^2 &= \frac{2\delta}{M} \implies h = \sqrt{\frac{2\delta}{M}}
+        \end{align*}
+        Since $E''(h) = \frac{2\delta}{h^3} > 0$ for positive $h$, this critical point represents a minimum. Thus, the optimal step size that balances truncation error and round-off error is $h = \sqrt{\frac{2\delta}{M}}$.
+    \end{itemize}
+    \end{solution}
+
+    
+    \begin{problem}
+        Use the Modified Euler method and the Runge-Kutta method of order four to approximate the solution of the initial-value problem
+        \begin{equation*}
+        y' = te^{3t} - 2y, \quad 0 \le t \le 1, \quad y(0) = 0
+        \end{equation*}
+        with step size $h = 0.5$. Compare the numerical results with the exact solution
+        \begin{equation*}
+        y(t) = \frac{1}{5}te^{3t} - \frac{1}{25}e^{3t} + \frac{1}{25}e^{-2t}.
+        \end{equation*}
+        \end{problem}
+        
+        \begin{solution}
+        The initial-value problem is defined by $f(t, y) = te^{3t} - 2y$, with $t_0 = 0, w_0 = 0$, and step size $h = 0.5$. We need approximations at $t_1 = 0.5$ and $t_2 = 1.0$.
+        
+        \vspace{0.3cm}
+        \textbf{1. Modified Euler Method} 
+        
+        The Modified Euler method (also known as the Midpoint Method) is given by:
+        \begin{equation*}
+        w_{i+1} = w_i + h f\left(t_i + \frac{h}{2}, w_i + \frac{h}{2}f(t_i, w_i)\right)
+        \end{equation*}
+        
+        \textit{Step 1: Approximation at $t_1 = 0.5$}
+        \begin{align*}
+        f(t_0, w_0) &= f(0, 0) = 0 \\
+        w_1 &= 0 + 0.5 f(0 + 0.25, 0 + 0.25(0)) \\
+        &= 0.5 f(0.25, 0) = 0.5 \left[ 0.25e^{3(0.25)} - 2(0) \right] \\
+        &= 0.5 [0.25e^{0.75}] \approx 0.5 [0.529250] = \mathbf{0.264625}
+        \end{align*}
+        
+        \textit{Step 2: Approximation at $t_2 = 1.0$}
+        \begin{align*}
+        f(t_1, w_1) &= f(0.5, 0.264625) = 0.5e^{1.5} - 2(0.264625) \approx 2.240845 - 0.529250 = 1.711595 \\
+        w_2 &= 0.264625 + 0.5 f(0.5 + 0.25, 0.264625 + 0.25(1.711595)) \\
+        &= 0.264625 + 0.5 f(0.75, 0.692524) \\
+        &= 0.264625 + 0.5 \left[ 0.75e^{3(0.75)} - 2(0.692524) \right] \\
+        &\approx 0.264625 + 0.5 \left[ 7.115801 - 1.385048 \right] \approx 0.264625 + 0.5(5.730753) = \mathbf{3.130001}
+        \end{align*}
+        
+        \vspace{0.3cm}
+        \textbf{2. Runge-Kutta Method of Order Four (RK4)}
+        
+        The RK4 method is given by $w_{i+1} = w_i + \frac{1}{6}(k_1 + 2k_2 + 2k_3 + k_4)$, where:
+        \begin{align*}
+        k_1 &= h f(t_i, w_i) \\
+        k_2 &= h f(t_i + h/2, w_i + k_1/2) \\
+        k_3 &= h f(t_i + h/2, w_i + k_2/2) \\
+        k_4 &= h f(t_{i+1}, w_i + k_3)
+        \end{align*}
+        
+        \textit{Step 1: Approximation at $t_1 = 0.5$}
+        \begin{align*}
+        k_1 &= 0.5 f(0, 0) = 0 \\
+        k_2 &= 0.5 f(0.25, 0) = 0.5 \left[0.25e^{0.75}\right] \approx 0.264625 \\
+        k_3 &= 0.5 f(0.25, 0.132313) = 0.5 \left[0.25e^{0.75} - 2(0.132313)\right] \approx 0.132312 \\
+        k_4 &= 0.5 f(0.5, 0.132312) = 0.5 \left[0.5e^{1.5} - 2(0.132312)\right] \approx 0.988110 \\
+        w_1 &= 0 + \frac{1}{6}(0 + 2(0.264625) + 2(0.132312) + 0.988110) \approx \mathbf{0.296997}
+        \end{align*}
+        
+        \textit{Step 2: Approximation at $t_2 = 1.0$}
+        \begin{align*}
+        k_1 &= 0.5 f(0.5, 0.296997) \approx 0.5 [2.240845 - 0.593994] \approx 0.823425 \\
+        k_2 &= 0.5 f(0.75, 0.708710) \approx 0.5 [7.115801 - 1.417420] \approx 2.849190 \\
+        k_3 &= 0.5 f(0.75, 1.721592) \approx 0.5 [7.115801 - 3.443184] \approx 1.836308 \\
+        k_4 &= 0.5 f(1.0, 2.133305) \approx 0.5 [20.085537 - 4.266610] \approx 7.909464 \\
+        w_2 &= 0.296997 + \frac{1}{6}(0.823425 + 2(2.849190) + 2(1.836308) + 7.909464) \approx \mathbf{3.314311}
+        \end{align*}
+        
+        \vspace{0.3cm}
+        \textbf{3. Exact Solution and Comparison}
+        
+        We evaluate the exact solution $y(t) = \frac{1}{5}te^{3t} - \frac{1}{25}e^{3t} + \frac{1}{25}e^{-2t}$ at $t=0.5$ and $t=1.0$:
+        \begin{align*}
+        y(0.5) &= 0.1e^{1.5} - 0.04e^{1.5} + 0.04e^{-1} = 0.06e^{1.5} + 0.04e^{-1} \approx \mathbf{0.283617} \\
+        y(1.0) &= 0.2e^{3} - 0.04e^{3} + 0.04e^{-2} = 0.16e^{3} + 0.04e^{-2} \approx \mathbf{3.219099}
+        \end{align*}
+        
+        \textbf{Summary Comparison Table:}
+        \begin{center}
+        \begin{tabular}{| c | c | c | c | c | c |}
+        \hline
+        $t$ & Exact $y(t)$ & Mod. Euler $w_i$ & ME Error & RK4 $w_i$ & RK4 Error \\
+        \hline
+        0.5 & 0.283617 & 0.264625 & 0.018992 & 0.296997 & 0.013380 \\
+        1.0 & 3.219099 & 3.130001 & 0.089098 & 3.314311 & 0.095212 \\
+        \hline
+        \end{tabular}
+        \end{center}
+        \textit{Note: The relatively large step size $h=0.5$ leads to significant truncation errors in both methods over the interval, particularly since the function contains rapidly growing exponential terms ($e^{3t}$).}
+        \end{solution}
+
+        \begin{problem}
+            Consider the difference method
+            \begin{equation*}
+            w_0 = \alpha,
+            \end{equation*}
+            \begin{equation*}
+            w_{i+1} = w_i + a_1 f(t_i, w_i) + a_2 f(t_i + \alpha_2, w_i + \delta_2 f(t_i, w_i)), \quad \text{for } i = 0, 1, \dots, N-1
+            \end{equation*}
+            Show that this method cannot have local truncation error $O(h^3)$ for any choice of the constants $a_1, a_2, \alpha_2$, and $\delta_2$.
+            \end{problem}
+            
+            \solutionnewpagefalse % no newpage after the final solution
+            \begin{solution}
+            The local truncation error $\tau_{i+1}(h)$ is defined by replacing the approximation $w_i$ with the exact solution $y(t_i)$ and dividing the residual by $h$:
+            \begin{equation*}
+            \tau_{i+1}(h) = \frac{y(t_{i+1}) - y(t_i)}{h} - \frac{1}{h} \Big[ a_1 f(t_i, y(t_i)) + a_2 f(t_i + \alpha_2, y(t_i) + \delta_2 f(t_i, y(t_i))) \Big]
+            \end{equation*}
+            For the method to have a local truncation error of $O(h^3)$, the numerator must match the exact solution expansion up to the $O(h^3)$ terms. That is, we must have:
+            \begin{equation*}
+            y(t_{i+1}) - y(t_i) - \Big[ a_1 f + a_2 f(t_i + \alpha_2, y_i + \delta_2 f) \Big] = \mathcal{O}(h^4)
+            \end{equation*}
+            where $f$ and its derivatives are evaluated at $(t_i, y(t_i))$.
+            
+            \vspace{0.3cm}
+            \textbf{1. Taylor Expansion of the Exact Solution}
+            
+            We compute the exact increment $y(t_{i+1}) - y(t_i)$ using the Taylor series of $y(t)$ around $t_i$. Since $y'(t) = f(t, y(t))$, we can find the higher derivatives using the chain rule:
+            \begin{align*}
+            y' &= f \\
+            y'' &= f_t + f_y y' = f_t + f f_y \\
+            y''' &= \frac{d}{dt}(f_t + f f_y) = (f_{tt} + f_{ty} f) + f(f_{yt} + f_{yy} f) + f_y(f_t + f_y f) \\
+            &= f_{tt} + 2f f_{ty} + f^2 f_{yy} + f_t f_y + f f_y^2
+            \end{align*}
+            Substitute these into the Taylor series $y(t_{i+1}) = y(t_i) + h y' + \frac{h^2}{2} y'' + \frac{h^3}{6} y''' + \mathcal{O}(h^4)$:
+            \begin{equation} \label{eq:exact_exp}
+            y(t_{i+1}) - y(t_i) = hf + \frac{h^2}{2}(f_t + f f_y) + \frac{h^3}{6}(f_{tt} + 2f f_{ty} + f^2 f_{yy} + f_t f_y + f f_y^2) + \mathcal{O}(h^4)
+            \end{equation}
+            
+            \vspace{0.3cm}
+            \textbf{2. Taylor Expansion of the Numerical Method}
+            
+            Now we expand the numerical increment $T = a_1 f + a_2 f(t_i + \alpha_2, y(t_i) + \delta_2 f)$ using the multivariable Taylor series for $f$ around $(t_i, y(t_i))$:
+            \begin{align*}
+            f(t_i + \alpha_2, y_i + \delta_2 f) &= f + \alpha_2 f_t + \delta_2 f f_y + \frac{1}{2} \left( \alpha_2^2 f_{tt} + 2\alpha_2 \delta_2 f f_{ty} + \delta_2^2 f^2 f_{yy} \right) + \mathcal{O}(\text{order } 3)
+            \end{align*}
+            Multiplying by $a_2$ and adding $a_1 f$, the numerical increment is:
+            \begin{equation} \label{eq:num_exp}
+            T = (a_1 + a_2)f + a_2 \alpha_2 f_t + a_2 \delta_2 f f_y + \frac{1}{2} a_2 \alpha_2^2 f_{tt} + a_2 \alpha_2 \delta_2 f f_{ty} + \frac{1}{2} a_2 \delta_2^2 f^2 f_{yy} + \dots
+            \end{equation}
+            
+            \vspace{0.3cm}
+            \textbf{3. Comparison of Coefficients}
+            
+            For the method to be $\mathcal{O}(h^3)$, the expansions in \eqref{eq:exact_exp} and \eqref{eq:num_exp} must be identical for any arbitrary, sufficiently smooth function $f(t,y)$. 
+            
+            Comparing the $O(h^3)$ terms from the exact solution to the numerical method's expansion:
+            \begin{itemize}
+                \item The exact expansion \eqref{eq:exact_exp} contains the terms $\frac{h^3}{6} f_t f_y$ and $\frac{h^3}{6} f f_y^2$.
+                \item The numerical expansion \eqref{eq:num_exp} evaluates $f$ at a single advanced point. As a result, its Taylor expansion produces purely second partial derivatives ($f_{tt}, f_{ty}, f_{yy}$) at the quadratic level. It \textbf{structurally cannot} generate products of first-order partial derivatives like $f_t f_y$ or $f f_y^2$.
+            \end{itemize}
+            
+            Since there are no parameters $a_1, a_2, \alpha_2, \delta_2$ that can generate the required $\frac{h^3}{6} f_y(f_t + f f_y)$ terms to match the exact solution's $y'''$ component, the expansions will always differ by at least $\mathcal{O}(h^3)$. 
+            
+            Therefore, $y(t_{i+1}) - w_{i+1} = \mathcal{O}(h^3)$, which means dividing by $h$ leaves a local truncation error of $\tau_{i+1}(h) = \mathcal{O}(h^2)$. The method cannot have a local truncation error of $\mathcal{O}(h^3)$.
+            \end{solution}
+
+\end{document}

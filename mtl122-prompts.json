@@ -1,0 +1,17 @@
+{
+    "prompts": [
+        {
+            "id": "prompt-17",
+            "prompt": "1-3",
+            "files": ["/home/prashant/Downloads/CamScanner 25-04-2026 18.43.pdf"]
+        },
+        {
+            "id": "prompt-18",
+            "prompt": "4-7"
+        },
+        {
+            "id": "prompt-19",
+            "prompt": "8-10"
+        }
+    ]
+}
